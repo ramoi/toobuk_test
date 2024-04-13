@@ -1,0 +1,47 @@
+{
+	"trade": {
+		"url": "https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&idx_cd=1240&freq=Y&period=N",
+		"bs.type": "html.parser",
+		"output": {
+			"dateAll": {
+				"type": "list",
+				"pattern": [
+					{
+						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+						"name": "DATE"
+					}
+				]
+			},
+			"date": {
+				"type": "list",
+				"pattern": [
+					{
+						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+						"name": "DATE",
+						"slice": { "start": 1 }
+					}
+				]
+			},
+			"datePart": {
+				"type": "list",
+				"pattern": [
+					{
+						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+						"name": "DATE",
+						"slice": [{"start": 1, "end": 2}, {"start": 11, "end": 13} ]
+					}
+				]
+			},
+			"dateSkipFunc": {
+				"type": "list",
+				"pattern": [
+					{
+						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+						"name": "DATE",
+						"skip": "func.skipFunc1"
+					}
+				]
+			}
+		}
+	}
+}

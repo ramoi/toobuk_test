@@ -1,0 +1,48 @@
+{
+	"trade": {
+		"url": "https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&idx_cd=1240&freq=Y&period=N",
+		"bs.type": "html.parser",
+		"output": {
+			"dateOrigin": {
+				"type": "list",
+				"pattern": [
+					{
+						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+						"name": "DATE"
+					}
+				]
+			},
+			"dateReg": {
+				"type": "list",
+				"pattern": [
+					{
+						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+						"name": "DATE",
+						"slice": { "start": 1 },
+						"converter" : "regx(regx=\"(?P<YYYY>\\d{4})(?P<MM>\\d{2}).\", replace=\"\\g<YYYY>-\\g<MM>\")"
+					}, {
+						"selector" : "#t_Table_124001 tbody > tr:nth-of-type(1) > td",
+						"name" : "전국",
+						"converter" : "float"
+					}, {
+						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+						"name": "DATE2",
+						"slice": { "start": 1 },
+						"converter" : "regx(regx='\\D', replace=''), regx(regx='$', replace='.'), float"
+					}
+				]
+			},
+			"dateConverter": {
+				"type": "list",
+				"pattern": [
+					{
+						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+						"name": "DATE",
+						"slice": { "start": 1 },
+						"converter": "func.contest1"
+					}
+				]
+			}
+		}
+	}
+}

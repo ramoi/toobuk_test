@@ -1,0 +1,18 @@
+{
+  "getTwinsNews" : {
+    "url" : "https://sports.daum.net/team/KBO/387",
+    "bs.type" : "html.parser",
+    "conn.type" : "seleniumTest.SeleniumLoopConnector",
+    "output" : {
+      "station" : {
+        "type" : "list",
+        "pattern" : [
+          {
+            "selector" : "div.cont_thumb > strong.tit_thumb > a",
+            "name" : "title"
+          }
+        ]
+      }
+    }
+  }
+}
