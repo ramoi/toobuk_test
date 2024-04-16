@@ -1,0 +1,61 @@
+{
+  "multi.param" : {
+    "url" : "https://kosis.kr/civilComplaint/qnaList.do",
+    "conn.type" : "post",
+    "bs.type" : "html.parser",
+    "parameter" :  [{"searchKeyword": "도시", "searchCondition": "subject"}, {"searchKeyword": "수도", "searchCondition": "subject"}],
+    "output" : {
+      "search" : {
+        "type" : "list",
+        "pattern" : [
+                  {
+                    "selector" : ".bd_lst_tit a",
+                    "name" : "TITLE"
+                  }, {
+                    "selector" : ".bd_lst_tbl > tbody td:nth-of-type(6)",
+                    "name" : "CNT"
+                  }
+                ]
+      }
+    }
+  },
+"paging" : {
+            "url" : "https://kosis.kr/civilComplaint/qnaList.do",
+            "conn.type" : "post",
+            "bs.type" : "html.parser",
+            "for" : { "type" :  "number", "name" : "pageIndex","start": 1, "end": 2},
+            "output" : {
+                        "qaList" : {    "type" : "list",
+                                   "pattern" : [
+                                                {
+                                                    "selector" : ".bd_lst_tit a",
+                                                    "name" : "TITLE"
+                                                }, {
+                                       "selector" : ".bd_lst_tbl > tbody td:nth-of-type(6)",
+                                       "name" : "CNT"
+                                     }
+                                               ]
+                                     }
+                        }
+                },
+  "multi.param_paging" : {
+    "url" : "https://kosis.kr/civilComplaint/qnaList.do",
+    "conn.type" : "post",
+    "bs.type" : "html.parser",
+    "parameter" :  [{"searchKeyword": "도시", "searchCondition": "subject"}, {"searchKeyword": "수도", "searchCondition": "subject"}],
+    "for" : { "type" :  "number", "name" : "pageIndex","start": 1, "end": 2},
+    "output" : {
+      "qaList" : {    "type" : "list",
+        "pattern" : [
+          {
+            "selector" : ".bd_lst_tit a",
+            "name" : "TITLE"
+          }, {
+            "selector" : ".bd_lst_tbl > tbody td:nth-of-type(6)",
+            "name" : "CNT"
+          }
+        ]
+      }
+    }
+  }
+}

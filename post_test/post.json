@@ -1,0 +1,18 @@
+{
+"qa" : {
+            "url" : "https://kosis.kr/civilComplaint/qnaList.do",
+            "conn.type" : "post",
+            "bs.type" : "html.parser",
+            "for" : { "type" :  "number", "name" : "pageIndex","start": 1, "end": 2},
+            "output" : {
+                        "date" : {    "type" : "list",
+                                   "pattern" : [
+                                                {
+                                                    "selector" : ".bd_lst_tit a",
+                                                    "name" : "TITLE"
+                                                }
+                                               ]
+                                     }
+                        }
+                }
+}

@@ -1,0 +1,1312 @@
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/potal/sub/css/sttsTable.css" type="text/css">
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title> 국가지표체계 | 통계표입력</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/potal/sub/css/before/common.css" type="text/css">
+<script type="text/javascript" src="/ext/js/jquery.js"></script>
+<script type="text/javascript">
+var browser;
+var array_tr_innerHTML_tmp = new Array(); //원상태로 설정하기 위해 배열 상위
+
+(function(){ // 외부 라이브러리와 충돌을 막고자 모듈화.
+	// 브라우저 및 버전을 구하기 위한 변수들.
+	'use strict';
+
+	var agent = navigator.userAgent.toLowerCase(),
+	    name = navigator.appName;
+	    /*,browser;*/
+
+	// MS 계열 브라우저를 구분하기 위함.
+	if(name === 'Microsoft Internet Explorer' || agent.indexOf('trident') > -1 || agent.indexOf('edge/') > -1) {
+		browser = 'ie';
+		if(name === 'Microsoft Internet Explorer') { // IE old version (IE 10 or Lower)
+			agent = /msie ([0-9]{1,}[\.0-9]{0,})/.exec(agent);
+			browser += parseInt(agent[1]);
+		} else { // IE 11+
+			if(agent.indexOf('trident') > -1) { // IE 11
+				browser += 11;
+			} else if(agent.indexOf('edge/') > -1) { // Edge
+				browser = 'edge';
+			}
+		}
+	} else if(agent.indexOf('safari') > -1) { // Chrome or Safari
+		if(agent.indexOf('opr') > -1) { // Opera
+			browser = 'opera';
+		} else if(agent.indexOf('chrome') > -1) { // Chrome
+			browser = 'chrome';
+		} else { // Safari
+			browser = 'safari';
+		}
+	} else if(agent.indexOf('firefox') > -1) { // Firefox
+		browser = 'firefox';
+	}
+
+	// IE: ie7~ie11, Edge: edge, Chrome: chrome, Firefox: firefox, Safari: safari, Opera: opera
+	document.getElementsByTagName('html')[0].className = browser;
+	document.getElementsByTagName('html')[0].style.height = "auto";
+}());
+
+//iFrame 사이즈 자동 조절
+function resizeIframeGen(){
+	var objField = 0 ;
+	if (browser.indexOf("ie") > -1 ||browser.indexOf("edge")>-1){
+	     objField = document.documentElement.scrollHeight;
+	}else{
+	     objField = document.documentElement.scrollHeight;
+	}
+	var mainObjField = parent.document.getElementById("showStblGams");
+	mainObjField.height = objField +20;
+
+	/*증감비교 버튼 숨기기B   소스코드 보안진단*/
+	var $tr = $('#t_Table_124001').find('[data-id^=trSort]');
+	$tr.hide();
+
+	parent.document.getElementById("spinner").style.display = "none";
+}
+
+function excelDown(){
+	var stts_cd = "124001"; //소스코드 보안진단
+	var idx_cd = "1240";
+	var $table = $('#t_Table_'+stts_cd).clone();
+	$table.find('[data-id^=trSort]').remove();
+	$table[0].rows[0].cells[0].rowSpan = $table[0].rows[0].cells[0].rowSpan-1;
+	var t_rows = $table[0].rows;
+	var data_value = '';
+	for(var i=0; i<t_rows.length; i++) {
+		if(t_rows[i].style.display != "none"){//tr의 display 보여줄때만
+			var t_cells = t_rows[i].cells;
+			if(t_cells.length>250) {
+				alert('다운로드 받을 수 있는 열(Column)의 갯수를 초과하였습니다.\n주기를 조정하여 주세요.\n(제한:250 / 현재:'+t_cells.length+')');
+				return;
+			}
+			for(var j=0; j<t_cells.length; j++) {
+				if(t_cells[j].style.display != "none"){//td의 display 보여줄때만
+					data_value += t_cells[j].colSpan + '@span';
+					data_value += t_cells[j].rowSpan + '@span';
+					if($(t_cells[j]).attr('data-id').indexOf('td_')>=0) data_value += t_cells[j].innerText.trim() + '@td@cell';
+					if($(t_cells[j]).attr('data-id').indexOf('td_')<0) data_value += t_cells[j].innerText.trim() + '@th@cell';
+				}
+			}
+			data_value += '@row';
+		}
+	}
+	var $form = $('<form name="exceldownform" method="post" action="/unity/potal/indicator/exceldown.do">');
+	var $datavalue = $('<input type="hidden" name="datavalue"/>');
+	$datavalue.val(data_value);
+	$form.append($datavalue);
+	var $idxcd = $('<input type="hidden" name="idxcd"/>');
+	$idxcd.val(idx_cd);
+	$form.append($idxcd);
+	var $sttscd = $('<input type="hidden" name="sttscd"/>');
+	$sttscd.val(stts_cd);
+	$form.append($sttscd);
+	$('body').append($form);
+	$form.submit();
+}
+
+function returnExcelDownParam(){
+	var stts_cd = "124001"; //소스코드 보안진단
+	var idx_cd = "1240";
+	var $table = $('#t_Table_'+stts_cd).clone();
+	$table.find('[data-id^=trSort]').remove();
+	$table[0].rows[0].cells[0].rowSpan = $table[0].rows[0].cells[0].rowSpan-1;
+	var t_rows = $table[0].rows;
+	var data_value = '';
+	for(var i=0; i<t_rows.length; i++) {
+		var t_cells = t_rows[i].cells;
+		if(t_cells.length>250) {
+			alert('다운로드 받을 수 있는 열(Column)의 갯수를 초과하였습니다.\n주기를 조정하여 주세요.\n(제한:250 / 현재:'+t_cells.length+')');
+			return;
+		}
+		for(var j=0; j<t_cells.length; j++) {
+			data_value += t_cells[j].colSpan + '@span';
+			data_value += t_cells[j].rowSpan + '@span';
+			if($(t_cells[j]).attr('data-id').indexOf('td_')>=0) data_value += t_cells[j].innerText.trim() + '@td@cell';
+			if($(t_cells[j]).attr('data-id').indexOf('td_')<0) data_value += t_cells[j].innerText.trim() + '@th@cell';
+		}
+		data_value += '@row';
+	}
+
+	let paramMap = {
+		idx_cd : idx_cd,
+		stts_cd : stts_cd,
+		data_value  : data_value
+
+	};
+	return paramMap;
+}
+
+function ppppp(sttsCd, val, flg, header_id) {
+	// flg = 1 --직접제어 2 -- 자동제어
+	//chk : 표두 colspan 체크
+	var chk = false;
+
+	//표두 설정
+	//p_open 선택 시 동일선에 있는 부모의 colspan을 증가 시키기 위함
+	if ( header_id != "" ) {
+		//console.log(header_id);
+		var flgNum = 1;
+		if ( document.getElementById("m_"+val).alt == "p_close" ) flgNum = -1;
+		var t_colspan = $('[data-name='+header_id+']').prop('colspan');
+		$('[data-name='+header_id+']').prop('colspan', ((t_colspan==0)?1:t_colspan)+flgNum);
+		//console.log($('[data-name='+header_id.replace('_s','')+']'), $('[data-name='+header_id.replace('_s','')+']').attr('data-index'));
+
+		//20220809 이지영 추가
+		//theader 중복으로 data-name이 존재하여 수정
+		var t_index = [];
+		var pTr = $("[data-id="+$("[data-headers="+header_id+"]").parent()[0].attributes[0].value+"]").prev().attr("data-id");
+		if(pTr != null){
+			t_index = $("[data-id="+pTr+"] [data-name="+header_id.replace('_s','')+"]").attr("data-index").split(":");
+		}else{
+			t_index = $('[data-name='+header_id.replace('_s','')+']').attr('data-index').split(':');
+		}
+		var t_id = t_index[0];
+		//colspan이 1개 이상인 경우
+		var oriColspan = 0;
+		if($('[data-index="'+t_id+'"]').prop('colspan') > 1){
+			chk = true;
+			oriColspan = $('[data-index="'+t_id+'"]').prop('colspan');
+		}
+		$('[data-index="'+t_id+'"]').prop('colspan', (($('[data-index="'+t_id+'"]').prop('colspan')==0)?1:$('[data-index="'+t_id+'"]').prop('colspan'))+flgNum);
+		for (var i = 1; typeof t_index[i] != 'undefined'; i++) {
+			t_id += ":" + t_index[i];
+			$('[data-index="'+t_id+'"]').prop('colspan', (($('[data-index="'+t_id+'"]').prop('colspan')==0)?1:$('[data-index="'+t_id+'"]').prop('colspan'))+flgNum);
+		}
+	} //-- 표두 설정 끝
+
+	var t_table = document.getElementById("t_Table_"+sttsCd);
+
+	for ( var i=0 ; i < t_table.rows.length ; i++ ) {
+
+		var objRow = t_table.rows[i];
+		for ( var j=0 ; j < t_table.rows[i].cells.length ; j++ ) {
+
+			if ( t_table.rows[i].cells[j].id == val ) {
+
+				if ( ( document.getElementById("m_"+val).alt == "p_open" && flg == 1 ) ||  ( document.getElementById("m_"+val).alt == "p_close" && flg == 2 ) ) {
+
+					if ( t_table.rows[i].cells[j].id == val ) {//증감비교 버튼 셀과 동일한 경우
+
+						//셀 추가
+						cell = objRow.insertCell(j+1);
+						cell.id = "new";
+						cell.style.width = "80px";
+						cell.style.textAlign = "left";
+
+						var data_b = t_table.rows[i].cells[j].innerHTML.replace(/\,/g,"").replace("-", "");//현재 셀값
+						var minus_a = "0";//비교 셀값
+
+						if(chk){
+							//item-id가 맞는지 확인
+							if(t_table.rows[i].cells[j].attributes[2].name == "item-id"){
+								var cellIdx = $("#"+t_table.rows[i].cells[j].id).index();
+								if(cellIdx - oriColspan > 0){//첫번째 요소가 아닌경우
+									var nowItemId = t_table.rows[i].cells[j].attributes[2].value;//현재 item-id 확인
+									if(t_table.rows[i].cells[j-oriColspan].attributes[2] != null){
+										if(t_table.rows[i].cells[j-oriColspan].attributes[2].value == nowItemId){
+											minus_a = t_table.rows[i].cells[j-oriColspan].innerHTML.replace(/\,/g,"").replace("-", "");
+										}else if(t_table.rows[i].cells[j-oriColspan-oriColspan].attributes[2].value == nowItemId){
+											minus_a = t_table.rows[i].cells[j-oriColspan-oriColspan].innerHTML.replace(/\,/g,"").replace("-", "");
+										}
+									}else if(t_table.rows[i].cells[j-oriColspan-1].attributes[2] != null){
+										if(t_table.rows[i].cells[j-oriColspan-1].attributes[2].value == nowItemId){
+											minus_a = t_table.rows[i].cells[j-oriColspan-1].innerHTML.replace(/\,/g,"").replace("-", "");
+										}else if(t_table.rows[i].cells[j-oriColspan-oriColspan-1].attributes[2].value == nowItemId){
+											minus_a = t_table.rows[i].cells[j-oriColspan-oriColspan-1].innerHTML.replace(/\,/g,"").replace("-", "");
+										}
+									}else{
+										minus_a = "0";
+									}
+								}else{//첫번재 요소
+									minus_a = data_b;
+								}
+							}
+						}else{
+							if ( j - 2 > -1 ) {//첫번째 요소가 아닌경우
+
+								if ( t_table.rows[i].cells[j-1].id.indexOf("td_"+sttsCd) > -1 ) {
+									minus_a = t_table.rows[i].cells[j-1].innerHTML.replace(/\,/g,"").replace("-", "");
+								} else if ( t_table.rows[i].cells[j-2].id.indexOf("td_"+sttsCd) > -1 ) {
+									minus_a = t_table.rows[i].cells[j-2].innerHTML.replace(/\,/g,"").replace("-", "");
+								} else {
+									minus_a = "0";
+								}
+
+							} else {
+								minus_a = data_b;
+							}
+						}
+
+						if ( !isNumber(data_b) ) data_b = "0";
+						if ( !isNumber(minus_a) ) minus_a = "0";
+
+						//데이터 비교
+						var result_dt = "0";
+						if ( minus_a != "0" ) {
+							result_dt = ( 100 / Number(minus_a) ) * ( Number(data_b) - Number(minus_a) );
+						}
+
+						if ( !isNumber(result_dt) ) result_dt = "0";
+
+						if ( result_dt == "0" ) {
+							result_dt = "<font class='green'><strong>⇔</strong></font>&#40;" + Math.round(result_dt) + "&#37;&#41;";
+						} else if ( Number(data_b) - Number(minus_a)  > 0 ){
+							result_dt = "<font class='red'>▲</font>&#40;" + Math.round(result_dt*10)/10 + "&#37;&#41;";
+						} else {
+							result_dt = "<font class='blue'>▼</font>&#40;" + Math.round(result_dt*10)/10 + "&#37;&#41;";
+						}
+
+						cell.innerHTML = "<div style=overflow:hidden;white-space:nowrap; >" + result_dt + "</div>";
+					}
+
+				} else {
+
+					if ( t_table.rows[i].cells[j+1].id == "new" && flg == 1 ) objRow.deleteCell(j+1);
+				}
+			}
+		}
+	}
+
+	if ( flg == 1 ) {
+		if ( document.getElementById("m_"+val).alt == "p_open" ) {
+			document.getElementById("m_"+val).alt = "p_close";
+		} else {
+			document.getElementById("m_"+val).alt = "p_open";
+		}
+	}
+}
+
+function uuuuu(sttsCd, val, flg) {
+
+	var data = [0,0,0];
+
+	var tmp_tr_cnt = document.getElementById("t_Table_"+sttsCd).rows.length - document.getElementById("head_m_"+sttsCd).rowSpan;
+
+	var arr_tableData 			= new Array();
+	var arr_rankData 			= new Array();
+	var array_tr_innerHTML	= new Array();
+
+	var tr_name = "";
+	var rank_num = 0;
+
+	if ( flg != 77 ) //sort, 77=초기값, 랭킹을 구하고 해당 tr복사후 랭킹대로 다시 tr에 붙여넣는방식
+	{
+
+		var colSpan = document.getElementById("head_m_" + sttsCd).colSpan;
+		var tmp_th, colSpan_th;
+
+		for ( var i=0; i < tmp_tr_cnt ; i++ )
+		{
+			tr_name = "tr_" + sttsCd + "_" + (i + 1);
+
+			var c_cnt = 0;
+
+			for ( var j=0 ; j <  document.getElementById(tr_name).cells.length ; j++ ) {
+				if ( document.getElementById(tr_name).cells[j].id.indexOf("td_"+sttsCd) == -1 && document.getElementById(tr_name).cells[j].id.indexOf("new") == -1) {
+					c_cnt += document.getElementById(tr_name).cells[j].colSpan;
+				}
+			}
+
+			//colspan이 2이상일 경우를 처리 하기위해 colspan의 유무를 숫자로 구분후 처리
+			var t = 0;
+			var tt = new Array();
+			for ( var j=0 ; j <  document.getElementById(tr_name).cells.length ; j++ ) {
+
+				if ( document.getElementById(tr_name).cells[j].id.indexOf("td_"+sttsCd) == -1 && document.getElementById(tr_name).cells[j].id.indexOf("new") == -1) {
+
+					colSpan_th = document.getElementById(tr_name).cells[j].colSpan;
+					for ( var k=0 ; k < colSpan_th ; k++ ) { tt.push(t); }
+					t++;
+				}
+			}
+
+			for ( var j=0 ; j < tt.length ; j++ ) {
+				var num = tt[j];
+				// data 값 역순으로
+				data[( c_cnt - 1 ) - j] = document.getElementById(tr_name).cells[num].innerHTML;
+			}
+
+			tmp_th = '';
+			var colspan_cnt = '';
+			for ( var j=0 ; j < colSpan ; j++ ) {
+				colspan_cnt = setColspan_cnt(data);
+				if ( colSpan == 1 ) colspan_cnt = 1;
+				tmp_th += '<th class="tl" id="t277624_c1_0" nowrap="nowrap" rowspan="1" colspan="' + colspan_cnt + '">th_Name_' + j + '</th>';
+
+				if ( colspan_cnt > 1 ) for (var k=0 ; k < colspan_cnt ; k++ ) { j++; }
+			}
+			tmp_th += '\n';
+
+			for ( var j=0; j < colSpan ; j++ ) {
+				// data 값 역순으로
+				tmp_th = tmp_th.replace("th_Name_"+j, data[ ( colSpan -1 ) - j ] );
+			}
+
+			var indexOf_th, indexOf_td, tmp_th_start, tmp_td;
+
+			indexOf_th		= document.getElementById(tr_name).innerHTML.toLowerCase().indexOf("<th");
+			indexOf_td		= document.getElementById(tr_name).innerHTML.toLowerCase().indexOf("<td");
+			tmp_th_start	= document.getElementById(tr_name).innerHTML.substr(0, indexOf_th);
+			tmp_td			= document.getElementById(tr_name).innerHTML.substr(indexOf_td);
+
+			$('#'+tr_name).html(tmp_th_start + tmp_th + tmp_td);
+			//$('[data-id='+tr_name+']').html(tmp_th_start + tmp_th + tmp_td);
+
+			for ( var k=0 ; k < document.getElementById(tr_name).cells.length ; k++ )
+			{
+				if ( document.getElementById(tr_name).cells[k].id == val )
+				{
+					arr_tableData.push(sttsCd+"@"+document.getElementById(tr_name).cells[k].innerHTML);
+				}
+			}
+
+			array_tr_innerHTML.push(document.getElementById(tr_name).innerHTML);
+		}
+		/* 표측 ---------- end*/
+
+		for ( var i=0; i < arr_tableData.length ; i++ )
+		{
+			rank_num = 0;
+			for ( var j=0; j < arr_tableData.length ; j++ )
+			{
+
+				if ( arr_tableData[i].indexOf(sttsCd) > -1 && arr_tableData[j].indexOf(sttsCd) > -1 ) {
+					var tmp_numA = arr_tableData[i].replace(/\,/g,"").replace(sttsCd+"@", "");
+					var tmp_numB = arr_tableData[j].replace(/\,/g,"").replace(sttsCd+"@", "");
+
+					if ( !isNumber(tmp_numA) )  tmp_numA = 0;
+					if ( !isNumber(tmp_numB) )  tmp_numB = 0;
+
+					if ( Number(tmp_numA) < Number(tmp_numB) && i != j && flg == 55 ) {
+						rank_num++;
+					} else if ( Number(tmp_numA) > Number(tmp_numB) && i != j && flg == 66 ) {
+						rank_num++;
+					}
+				}
+			}
+
+			for ( var k=0; k < arr_rankData.length ; k++ ) //rank_num이 중복을 막기위해
+			{
+				if ( arr_rankData[k] == sttsCd+"@"+rank_num )
+				{
+					rank_num++;
+				}
+			}
+
+			arr_rankData.push(sttsCd+"@"+rank_num);
+		}
+
+		//랭킹별로 넣음
+		for ( var i=0; i < tmp_tr_cnt ; i++ )
+		{
+			tr_name = "tr_" + sttsCd + "_" + (i + 1);
+			for ( var j=0; j < tmp_tr_cnt ; j++ )
+			{
+				if ( sttsCd+"@"+i == arr_rankData[j] )
+				{
+					$('#'+tr_name).html(array_tr_innerHTML[j]);
+				}
+			}
+		}
+	} //if end
+
+
+	//지표퍼센트를 초기화후 다시 설정
+	var array_td = "", tmp_td_a="", tmp_td_b="";
+	var m_rowSpan_cnt = document.getElementById("head_m_"+sttsCd).rowSpan;
+	var objData = document.getElementById("t_Table_"+sttsCd).rows[m_rowSpan_cnt];
+
+	for ( var i=0 ; i < document.getElementById("t_Table_"+sttsCd).rows.length ; i++ ) {
+
+		if ( document.getElementById("t_Table_"+sttsCd).rows[i] != undefined ) {
+			for ( var j=0 ; j < document.getElementById("t_Table_"+sttsCd).rows[i].cells.length ; j++ ) {
+				if ( document.getElementById("t_Table_"+sttsCd).rows[i].cells[j].id == "new" ) {
+					document.getElementById("t_Table_"+sttsCd).rows[i].deleteCell(j);
+				}
+			}
+		}
+	}
+
+
+	for ( var i=0 ; i < objData.cells.length ; i++ ) {
+
+		tmp_td_a = "td_"+sttsCd+"_"+i;
+		if ( document.getElementById("m_"+tmp_td_a) != null ) {
+			if ( document.getElementById("m_"+tmp_td_a).alt == "p_close" ) {
+				if ( tmp_td_b != "" ) tmp_td_b +="@";
+				tmp_td_b += tmp_td_a;
+			}
+		}
+	}
+
+	array_td = tmp_td_b.split("@");
+
+	if ( array_td != "" ) {
+		for ( var i=0 ; i < array_td.length ; i++ ) {
+			ppppp(sttsCd, array_td[i], 2, "");
+		}
+	}
+}
+
+function setColspan_cnt(data){
+
+	var cnt=1;
+	for ( var i=0 ; i < data.length ; i++ ) {
+		if ( data[(data.length-1)-i] == data[(data.length-1)-(i+1)] && (i+1) != data.length) {
+			cnt++;
+		}
+	}
+
+	return cnt;
+}
+
+function isNumber(s) {
+	s += '';
+	s = s.replace(/^\s+|\s+$/g,'');
+
+	if ( s == '' || isNaN(s) ) return false;
+	return true;
+}
+
+
+//초기화
+function fn_idxReset(sttsCd) {
+
+	//증감비교 숨김처리
+	var $tr = $('#t_Table_'+sttsCd).find('[data-id^=trSort]');
+	if($tr.css("display") != "none"){
+		$tr.hide();
+	}
+
+	heatFlg = heatFlg.replace(sttsCd+"@"+"t", sttsCd+"@"+"f");
+
+	document.getElementById("searchWrd"+sttsCd).value = "";
+	idxSch(sttsCd);
+
+	var tmp_table = document.getElementById("t_Table_"+sttsCd);
+	var k=0;
+
+	for ( var i=0; i < array_tr_innerHTML_tmp.length ; i++ ){
+		if ( array_tr_innerHTML_tmp[i].indexOf(sttsCd) > -1 ) {
+			$(tmp_table.rows[k]).html(array_tr_innerHTML_tmp[i]);
+			k++;
+		}
+	}
+}
+
+//히트맵
+var heatFlg = "";
+function fn_heatMap(sttsCd) {
+
+	fn_oriChk(sttsCd);
+
+	if ( heatFlg.indexOf(sttsCd) == -1 ) {
+		heatFlg += sttsCd+"@"+"f";
+	}
+
+	$('#heatMap_'+sttsCd).each(function(){
+
+		if( heatFlg.indexOf(sttsCd+"@"+"f") > -1 ) {
+			Array.max = function( array ){
+				array = jQuery.grep(array, function(a) {
+					return String(a) !== "NaN";
+				});
+		        return Math.max.apply( Math, array );
+		    };
+				Array.min = function( array ){
+				array = jQuery.grep(array, function(a) {
+					return String(a) !== "NaN";
+				});
+		        return Math.min.apply( Math, array );
+		    };
+
+		    // get all values
+		    /* var counts= $('#t_Table_'+sttsCd+' tbody td').map(function() {
+		    	if ( $('#t_Table_'+sttsCd+' tbody td').attr("data-id") != "new" ) {
+			    	if( $(this).text() == "-" ) {
+			    		return parseInt($(this).text().replace(/-/gi,"0"));
+			    	} else {
+			    		return parseInt($(this).text().replace(/,/gi,""));
+			    	}
+		    	}
+		    }).get(); */
+
+		    /*  23년 개선 통계표 heatMap */
+		    var counts= $('#t_Table_'+sttsCd+' tbody').map(function() {
+		         return $(this).children().map(function() {//tr
+		             if($(this).css("display") != "none"){
+		         return $(this).children().map(function() { //td
+		          	 if($(this).attr("data-id") != "new" ) {
+		           		if( $(this).text() == "-" ) {
+		            		return parseInt($(this).text().replace(/-/gi,"0"));
+		           		} else {
+		            		return parseInt($(this).text().replace(/,/gi,""));
+		           		}
+		          	 }
+		          	}).get();
+		          }
+		         }).get();
+		        }).get();
+
+			// return max value
+			var max = Array.max(counts);
+			var min = Array.min(counts);
+
+			max = max - min;
+
+			xr = 255;
+		    xg = 255;
+		    xb = 255;
+			yr = 27;
+		    yg = 167;
+		    yb = 161;
+
+		    n = 100;
+			// add classes to cells based on nearest 10 value
+			$('#t_Table_'+sttsCd+' tbody td').each(function(){
+
+				if ( $('#t_Table_'+sttsCd+' tbody td').attr("data-id") != "new" ) {
+					var val;
+					if( $(this).text() == "-" ) {
+			    		val = parseInt($(this).text().replace(/-/gi,"0"));
+			    	} else {
+			    		val = parseInt($(this).text().replace(/,/gi,""));
+			    	}
+					val = val - min;
+
+					var pos = parseInt((Math.round((val/max)*100)).toFixed(0));
+					red = parseInt((xr + (( pos * (yr - xr)) / (n-1))).toFixed(0));
+					green = parseInt((xg + (( pos * (yg - xg)) / (n-1))).toFixed(0));
+					blue = parseInt((xb + (( pos * (yb - xb)) / (n-1))).toFixed(0));
+					clr = 'rgb('+red+','+green+','+blue+')';
+					$(this).css({backgroundColor:clr});
+				}
+			});
+
+			heatFlg = heatFlg.replace(sttsCd+"@"+"f", sttsCd+"@"+"t");
+		} else {
+			$('#t_Table_'+sttsCd+' tbody td').each(function(){
+
+				if ( $('#t_Table_'+sttsCd+' tbody td').attr("data-id") != "new" ) {
+					clr = 'rgb(255,255,255)';
+					$(this).css({backgroundColor:clr});
+				}
+
+			});
+
+			heatFlg = heatFlg.replace(sttsCd+"@"+"t", sttsCd+"@"+"f");
+		}
+
+	});
+}
+
+/*최초상태인지 확인 후 복사*/
+function fn_oriChk(sttsCd) {
+
+	var chkFlg = false;
+	if(0 < array_tr_innerHTML_tmp.length){
+		if ( array_tr_innerHTML_tmp[0].indexOf(sttsCd) > -1 ) {//sttsCd 값 있는지 확인
+			chkFlg = true;
+		}
+	}
+
+	if ( !chkFlg ) { //최초인 상태를 복사
+		var tmp_table = document.getElementById("t_Table_"+sttsCd);
+		for ( var i=0; i < tmp_table.rows.length ; i++ ){
+		 	array_tr_innerHTML_tmp.push(tmp_table.rows[i].innerHTML);
+		}
+	}
+}
+
+/*증감 비교 버튼 > 전체 활성화   소스코드 보안진단*/
+function fn_btnP(sttsCd) {
+	fn_idxReset("124001");
+	$("#t_Table_" + sttsCd).find($("a[href^='javascript:ppppp']")).each(
+			function(index) {
+				$(this).get(0).click();
+			}
+		);
+}
+
+//통계표 검색
+function idxSch(sttsCd) {
+
+	fn_oriChk(sttsCd);
+
+	var searchWrd = document.getElementById("searchWrd"+sttsCd).value;
+	var t_table = document.getElementById("t_Table_"+sttsCd);
+	var head_rowCnt = $("[data-id=head_m_"+sttsCd+"]")[0].rowSpan;
+	var head_colCnt = $("[data-id=head_m_"+sttsCd+"]")[0].colSpan;
+
+	reSet_side(sttsCd);
+
+	for ( var i=head_rowCnt ; i < t_table.rows.length ; i++ ) {
+
+		var objRow = t_table.rows[i];
+		var data_t = "";
+
+		for ( var j=0 ; j < head_colCnt ; j++ ) {
+			if(t_table.rows[i].cells[j] == null){
+				data_t += "_";
+			}else{
+				data_t += "_"+t_table.rows[i].cells[j].innerHTML;
+			}
+		}
+
+		objRow.style.display = "";
+		if ( data_t.indexOf(searchWrd) == -1 && searchWrd != "" ) objRow.style.display = "none";
+	}
+
+}
+/*표측 초기화*/
+function reSet_side(sttsCd){
+
+	var tmp_tr_cnt = document.getElementById("t_Table_"+sttsCd).rows.length - $("[data-id=head_m_"+sttsCd+"]").rowSpan;
+	var colSpan = $("[data-id=head_m_"+sttsCd+"]")[0].colSpan;
+	var tmp_th, colSpan_th;
+	var data = [0,0,0];
+
+	for ( var i=0; i < tmp_tr_cnt ; i++ ){
+		tr_name = "tr_" + sttsCd + "_" + (i + 1);
+		tr_obj = $("[data-id="+tr_name+"]")[0];
+
+		var c_cnt = 0;
+
+		for ( var j=0 ; j <  tr_obj.cells.length ; j++ ) {
+			if ( $(tr_obj.cells[j]).attr('data-id').indexOf("td_"+sttsCd) == -1 && $(tr_obj.cells[j]).attr('data-id').indexOf("new") == -1) {
+				c_cnt += tr_obj.cells[j].colSpan;
+			}
+		}
+
+		//colspan이 2이상일 경우를 처리 하기위해 colspan의 유무를 숫자로 구분후 처리
+		var t = 0;
+		var tt = new Array();
+		for ( var j=0 ; j <  tr_obj.cells.length ; j++ ) {
+
+			if ( $(tr_obj.cells[j]).attr('data-id').indexOf("td_"+sttsCd) == -1 && $(tr_obj.cells[j]).attr('data-id').indexOf("new") == -1) {
+
+				colSpan_th = tr_obj.cells[j].colSpan;
+				for ( var k=0 ; k < colSpan_th ; k++ ) { tt.push(t); }
+				t++;
+			}
+		}
+
+		for ( var j=0 ; j < tt.length ; j++ ) {
+			var num = tt[j];
+			// data 값 역순으로
+			data[( c_cnt - 1 ) - j] = tr_obj.cells[num].innerHTML;
+		}
+
+		tmp_th = '';
+		var colspan_cnt = '';
+		for ( var j=0 ; j < colSpan ; j++ ) {
+			colspan_cnt = setColspan_cnt(data);
+			if ( colSpan == 1 ) colspan_cnt = 1;
+			tmp_th += '<th class="tl" data-id="tmp_c1_0" nowrap="nowrap" rowspan="1" colspan="' + colspan_cnt + '">th_Name_' + j + '</th>';
+
+			if ( colspan_cnt > 1 ) for (var k=0 ; k < colspan_cnt ; k++ ) { j++; }
+		}
+		tmp_th += '\n';
+
+		for ( var j=0; j < colSpan ; j++ ) {
+			// data 값 역순으로
+			tmp_th = tmp_th.replace("th_Name_"+j, data[ ( colSpan -1 ) - j ] );
+		}
+
+		var indexOf_th, indexOf_td, tmp_th_start, tmp_td;
+
+		indexOf_th		= tr_obj.innerHTML.toLowerCase().indexOf("<th");
+		indexOf_td		= tr_obj.innerHTML.toLowerCase().indexOf("<td");
+		tmp_th_start	= tr_obj.innerHTML.substr(0, indexOf_th);
+		tmp_td			= tr_obj.innerHTML.substr(indexOf_td);
+
+		console.log(tmp_th_start + tmp_th + tmp_td);
+		$('[data-id='+tr_name+']').html(tmp_th_start + tmp_th + tmp_td);
+	}
+}
+
+/*증감버튼 활성화 or 비활성화 처리    소스코드 보안진단*/
+function fn_btnPClick(stts_cd){
+	fn_idxReset("124001");
+
+	var $tr = $('#t_Table_'+stts_cd).find('[data-id^=trSort]');
+
+	if($tr.css("display") == "none"){
+		$tr.show();
+	}else{
+		$tr.hide();
+	}
+}
+
+
+/*2022년 개선*******************************************************/
+
+/* 통계표 필터
+ * 데이터 찾기 팝업창 오픈
+ * 소스코드 보안진단
+ */
+function fn_openFindData(){
+	var url = "/unity/potal/eNara/sub/findData.do?sttsCd="+"124001";
+  	win = window.open(url, "데이터 필터","location=no,directories=no,resizable=no,scrollbars=no,status=no,toolbar=no,menubar=no,width=352,height=202,top=50,left=200");
+}
+
+/*데이터 찾기*/
+var findFlg = "";
+function fn_findData(sttsCd){
+	fn_oriChk(sttsCd);
+
+	if ( findFlg.indexOf(sttsCd) == -1 ) {
+		findFlg += sttsCd+"@"+"f";
+	}
+
+	$('#t_Table_'+sttsCd+' tbody td').each(function(){
+		if ( $('#t_Table_'+sttsCd+' tbody td').attr("data-id") != "new" ) {
+			clr = 'rgb(255,255,255)';
+			$(this).css({backgroundColor:clr});
+		}
+	});
+
+	findFlg = findFlg.replace(sttsCd+"@"+"t", sttsCd+"@"+"f");
+
+	$('#dataMap_'+sttsCd).each(function(){
+
+		if( findFlg.indexOf(sttsCd+"@"+"f") > -1 ) {
+
+			var comp1 = document.getElementById("comp1").value.replace(/,/g, "");
+			var comp2 = document.getElementById("comp2").value.replace(/,/g, "");
+
+			//비교값2 가 비교값1 보다 큰 경우 교환
+			if(comp2 != "" && comp2 < comp1){
+				comp1 = document.getElementById("comp2").value.replace(/,/g, "");
+				comp2 = document.getElementById("comp1").value.replace(/,/g, "");
+			}
+
+			// add classes to cells based on nearest 10 value
+			$('#t_Table_'+sttsCd+' tbody td').each(function(){
+
+				if ( $('#t_Table_'+sttsCd+' tbody td').attr("data-id") != "new" ) {
+					var val;
+					if( $(this).text() == "-" ) {//텍스트 값이 -이면 0처리
+			    		val = Number($(this).text().replace(/-/gi,"0"));
+			    	} else {//그외는 값 처리
+			    		val = Number($(this).text().replace(/,/gi,""));
+			    	}
+
+
+					//비교값2가 존재하는지 확인
+					if(comp2 != ""){
+						if( Number(comp1) <= val && val <= Number(comp2) ){
+							$(this).css("background", "#b5ffd9");
+						}
+					}else{
+						var oper = document.getElementById("oper").value;
+
+						//구분자별로 데이터 값 비교
+						if(oper == "1"){
+							if( Number(comp1) < val ){
+								$(this).css("background", "#b5ffd9");
+							}
+						}else if(oper == "2"){
+							if( Number(comp1) <= val ){
+								$(this).css("background", "#b5ffd9");
+							}
+						}else if(oper == "3"){
+							if( Number(comp1) == val ){
+								$(this).css("background", "#b5ffd9");
+							}
+						}else if(oper == "4"){
+							if( Number(comp1) > val ){
+								$(this).css("background", "#b5ffd9");
+							}
+						}else if(oper == "5"){
+							if( Number(comp1) >= val ){
+								$(this).css("background", "#b5ffd9");
+							}
+						}
+
+					}
+				}
+			});
+
+			findFlg = findFlg.replace(sttsCd+"@"+"f", sttsCd+"@"+"t");
+		}
+	});
+}
+
+
+/*조회설정    소스코드 보안진단*/
+function fn_settingCheck(sttsCd){
+	var url = "/unity/potal/eNara/sub/settingCheck.do?sttsCd="+"124001";
+  	win = window.open(url, "조회설정","location=no,directories=no,resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no,width=555,height=395,top=400,left=600");
+}
+
+/*히트맵조회설정  23년 개선사항 */
+function fn_heatMapCheck(sttsCd){
+	var url = "/unity/potal/eNara/sub/heatMapCheck.do?sttsCd="+"124001";
+  	win = window.open(url, "조회설정","location=no,directories=no,resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no,width=555,height=395,top=400,left=600");
+  	//fn_heatMap(sttsCd);
+}
+
+/* 조회설정 적용
+ * 설정된 값 숨김처리
+ * 소스코드 보안진단
+ */
+function fn_setting(){
+	fn_idxReset("124001");
+	var textArr = $("#textData").val().split(",");
+
+    for(var j=0; j < textArr.length; j++){
+    	if(textArr[j] != ""){
+    		/*표두*/
+			if(2 < $("thead tr").length){// 표두가 2개 이상인 경우(*정렬 기능 포함)
+				if($("thead [item-id="+textArr[j]+"]").length != 0){//조회설정 내용이 정확히 일치 하는 경우
+					for(var k=0; k < $("thead [item-id="+textArr[j]+"]").length; k++){
+						var dataIndex = $("thead [item-id="+textArr[j]+"]")[k].dataset.index;//자식 index
+						var grandIndex = dataIndex.substring(0, dataIndex.indexOf(":"));//조상 index
+						var parentIndex = dataIndex.substring(0, dataIndex.lastIndexOf(":"));//부모 index
+
+						if(2 < dataIndex.lastIndexOf(":")){//레벨이 3인경우
+							var colCnt = parseInt($("thead [data-index='"+parentIndex+"']").attr("colspan"))-1;
+			    			$("thead [data-index='"+parentIndex+"']").attr("colspan", colCnt);
+			    			if($("thead [data-index='"+parentIndex+"']").attr("colspan") == "0"){
+			    				$("thead [data-index='"+parentIndex+"']").css("display", "none");
+
+			    			}
+						}
+
+						if(isNaN(parseInt($("thead [data-index='"+dataIndex+"']").attr("colspan")))){//숫자가 이닌경우(true)
+							if(grandIndex != ""){
+								var colCnt = parseInt($("thead [data-index='"+grandIndex+"']").attr("colspan"))-1;
+				    			$("thead [data-index="+grandIndex+"]").attr("colspan", colCnt);
+							}
+
+						}else{//숫자인 경우(false)
+							if(grandIndex != ""){//조상 인덱스가 있는경우
+								var colCnt = parseInt($("thead [data-index='"+grandIndex+"']").attr("colspan"))-parseInt($("thead [data-index='"+dataIndex+"']").attr("colspan"));
+				    			$("thead [data-index="+grandIndex+"]").attr("colspan", colCnt);//조상
+							}
+			    			$("thead [data-index^='"+dataIndex+"']").css("display", "none");
+
+
+							for(var k=0; k < $("thead [data-index^='"+dataIndex+"']").length; k++){
+								var tmpItemId = "";
+				    			var tmpDataId = "";
+				    			var tIndex = "";
+								//표측 데이터 숨김처리
+								tmpDataId = $("thead [data-index^='"+dataIndex+"']")[k].attributes[0].value;
+								if(tmpDataId != ""){
+									tIndex = $("[data-id="+tmpDataId+"]").index()+1;
+									tmpItemId = $("thead [data-index^='"+dataIndex+"']")[k].attributes[1].value;
+									if(tmpItemId != ""){
+										$("tbody [item-num="+tIndex+"][item-id="+tmpItemId+"]").css("display", "none");
+									}else{
+										$("tbody [item-num="+tIndex+"]").css("display", "none");
+									}
+								}
+							}
+						}
+					}
+				}else{//조회 설정 내용 일치 않는 경우/ 비슷한 문자 추출
+					if(textArr[j].charAt(0) == "G"){//항목그룹이 존재하는경우
+						var grpCd = textArr[j].substring(0, textArr[j].indexOf("T"));//항목그룹코드
+						var itemCd = textArr[j].substring(textArr[j].indexOf("T"));//항목코드
+
+						//공백체크
+						if(grpCd != ""){
+							$("thead [item-id="+grpCd+"]").attr("colspan", parseInt($("[item-id="+grpCd+"]").attr("colspan"))-1);
+						}
+
+						if(itemCd != ""){
+							$("thead [item-id="+itemCd+"]").css("display", "none");
+						}
+
+					}else if(textArr[j].charAt(0) == "T"){//항목이 존재하는 경우
+						var itemCd = textArr[j].substring(textArr[j].indexOf("T")+3);//항목코드 제외 후 문자 추출
+						//공백체크
+						if(itemCd != ""){
+							$("thead [item-id="+itemCd+"]").css("display", "none");
+							if( 2 < $("thead tr").length ){
+								for(var k=0; k < $("thead [item-id="+itemCd+"]").length; k++){//헤더에 주기가 여러개인 경우 반복.
+									//attributes[2] > data-index
+									var dataIndex = $("thead [item-id="+itemCd+"]")[k].attributes[2].nodeValue;
+									var grandIndex = dataIndex.substring(0, dataIndex.indexOf(":"));//조상 index
+									if(grandIndex != ""){//조상 index가 존재하는경우
+										var colCnt = parseInt($("thead [data-index='"+grandIndex+"']").attr("colspan"))-1;
+						    			$("thead [data-index="+grandIndex+"]").attr("colspan", colCnt);
+									}
+
+									if(2 < dataIndex.lastIndexOf(":")){//레벨이 3인경우
+										var parentIndex = dataIndex.substring(0, dataIndex.lastIndexOf(":"));//부모 index
+										var colCnt = parseInt($("thead [data-index='"+parentIndex+"']").attr("colspan"))-1;
+						    			$("thead [data-index='"+parentIndex+"']").attr("colspan", colCnt);
+						    			if($("thead [data-index='"+parentIndex+"']").attr("colspan") == "0"){
+						    				$("thead [data-index='"+parentIndex+"']").css("display", "none");
+						    			}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			/*표측*/
+			var parentLen = $("tbody [item-id='"+textArr[j]+"']").parent().length;
+			if(parentLen == 1){
+		    	var dId= $("[item-id="+textArr[j]+"]").parent().attr("id");
+				if(1 < $("#"+dId+" th").length){//th가 1개 이상인 경우
+					var index = $("#"+dId).find("[item-id="+textArr[j]+"]").index();
+					//여기 3레벨일때 확인
+					if(index == 0 || ($("#"+dId).index() == 0 && index == 1 )){//첫번째 th인 경우
+						if(textArr[j].charAt(0) == "G"){//항목그룹이 존재하는경우(항목인 경우)
+			    			var grpCd = textArr[j].substring(0, textArr[j].indexOf("T"));//항목그룹코드
+			    			if(grpCd != ""){//
+			    				var rowCnt = parseInt($("[item-id="+grpCd+"]").attr("rowspan"))-parseInt($("[item-id="+textArr[j]+"]").attr("rowspan"));
+				    			$("[item-id="+grpCd+"]").attr("rowspan", rowCnt);
+				    			var childRowCnt = parseInt($("[item-id="+textArr[j]+"]").attr("rowspan"));
+
+								for(var k=0; k < childRowCnt; k++){
+									if(k == 0){
+										$("[item-id="+textArr[j]+"]").css("display", "none");
+										$("[item-id="+textArr[j]+"]").next().css("display", "none");
+										$("#"+dId+" td").css("display", "none");
+									}else{
+										$("#"+dId).css("display", "none");
+									}
+									if(k != childRowCnt-1){
+										dId = $("#"+dId).next()[0].id;
+									}else{
+						    			$("[item-id="+grpCd+"]").attr("rowspan", rowCnt+1);
+									}
+								}
+			    			}else{//최상위가 항목그룹인 경우(3레벨)
+			    				var rowCnt = parseInt($("[item-id="+textArr[j]+"]").attr("rowspan"));//rowspan 수
+								for(var k=0; k < rowCnt; k++){
+									$("#"+dId).css("display", "none");
+									if(k != rowCnt-1){
+										dId = $("#"+dId).next()[0].id;
+									}
+								}
+			    			}
+			    		}else{//분류인경우
+							var rowCnt = parseInt($("[item-id="+textArr[j]+"]").attr("rowspan"));//rowspan 수
+							for(var k=0; k < rowCnt; k++){
+								$("#"+dId).css("display", "none");
+								if(k != rowCnt-1){
+									dId = $("#"+dId).next()[0].id;
+								}
+							}
+			    		}
+					}else if(index == 1 && 2 < $("#"+dId+" th").length){//두번째 th인 경우
+						if(textArr[j].charAt(0) == "G"){//항목그룹이 존재하는경우(항목인 경우)
+			    			var grpCd = textArr[j].substring(0, textArr[j].indexOf("T"));//항목그룹코드
+			    			if(grpCd != ""){//그룹코드가 존재하는경우
+			    				var rowCnt = parseInt($("[item-id="+grpCd+"]").attr("rowspan"))-parseInt($("[item-id="+textArr[j]+"]").attr("rowspan"));
+				    			$("[item-id="+grpCd+"]").attr("rowspan", rowCnt);
+				    			var childRowCnt = parseInt($("[item-id="+textArr[j]+"]").attr("rowspan"));
+
+								for(var k=0; k < childRowCnt; k++){
+									if(k == 0){
+										$("[item-id="+textArr[j]+"]").css("display", "none");
+										$("[item-id="+textArr[j]+"]").next().css("display", "none");
+										$("#"+dId+" td").css("display", "none");
+									}else{
+										$("#"+dId).css("display", "none");
+									}
+									if(k != childRowCnt-1){
+										dId = $("#"+dId).next()[0].id;
+									}else{
+						    			$("[item-id="+grpCd+"]").attr("rowspan", rowCnt+1);
+									}
+								}
+			    			}
+						}
+					}else{//첫번째 th가 아닌 경우
+			    		$("[item-id="+textArr[j]+"]").css("display", "none");
+			    		$("#"+dId+" td").css("display", "none");
+					}
+		    	}else{//th가 1개인 경우
+		    		if(textArr[j].charAt(0) == "G"){//항목그룹이 존재하는경우
+		    			var grpCd = textArr[j].substring(0, textArr[j].indexOf("T"));//항목그룹코드
+		    			var rowCnt = parseInt($("[item-id="+grpCd+"]").attr("rowspan"))-1;
+		    			$("[item-id="+grpCd+"]").attr("rowspan", rowCnt);
+		    		}
+			    	$("#"+dId).css("display", "none");
+		    	}
+			}else{//부모 tr이 없는 경우 ==> 비슷한 문자열 추출
+				var itemId = $("tbody [item-id*='"+textArr[j]+"']").attr("item-id");
+				if(textArr[j] == itemId){//문자열이 동일한경우
+					$("[item-id="+textArr[j]+"]").css("display", "none");
+				}else{//문자열이 동일하지 않은경우 문자열 추출
+					var textLen = $("tbody [item-id*='"+textArr[j]+"']").length;
+					if( 0 < textLen){//비슷한 문자열이 존재 하는경우
+						for(var k=0; k < textLen; k++){
+							var dataId = "";
+							var dId = "";
+							if(1 < parseInt($("tbody [item-id="+itemId+"]").attr("rowspan"))){//첫번째 item-id로 추출해서 rowspan이 있는지 확인(2개 이상)
+								dataId = $("[item-id*="+textArr[j]+"]")[k].dataset.id;
+								dId = $("[data-id="+dataId+"]").parent().attr("id");
+							}else{
+								if(itemId.length == $("[item-id*="+textArr[j]+"]")[k].attributes[2].value.length){
+									dataId = $("[item-id*="+textArr[j]+"]")[k].dataset.id;
+									dId = $("[data-id="+dataId+"]").parent().attr("id");
+								}else{
+									dataId = "";
+									dId = "";
+								}
+							}
+
+							if(dataId != "" && dId != ""){
+								if(1 < $("#"+dId+" th").length){//th가 1개 이상인 경우
+						    		$("[data-id="+dataId+"]").css("display", "none");
+						    		$("#"+dId+" td").css("display", "none");
+						    	}else{//th가 1개인 경우
+						    		if(textArr[j].charAt(0) == "G"){//항목그룹이 존재하는경우
+						    			var grpCd = textArr[j].substring(0, textArr[j].indexOf("T"));//항목그룹코드
+						    			var rowCnt = parseInt($("[item-id="+grpCd+"]").attr("rowspan"))-1;
+						    			$("[item-id="+grpCd+"]").attr("rowspan", rowCnt);
+						    		}else{//분류 & 항목인 경우
+						    			itemId = $("[data-id="+dataId+"]").attr("item-id");
+						    			var itemIdIndex = itemId.indexOf(textArr[j]);
+										var itemStr = "";
+										if(0 < itemIdIndex){
+											itemStr = itemId.substring(0, itemIdIndex);
+										}else{
+											itemStr = itemId.substring(textArr[j].length);
+										}
+
+										if(itemStr.charAt(0) == "G"){//항목그룹이 존재하는경우
+							    			var grpCd = itemStr.substring(0, itemStr.indexOf("T"));//항목그룹코드
+							    			var rowCnt = parseInt($("[item-id="+grpCd+"]").attr("rowspan"))-1;
+							    			$("[item-id="+grpCd+"]").attr("rowspan", rowCnt);
+										}
+
+										var index = $("[item-id="+itemStr+"]").index();
+										if(index == 1){//th가 두번째에 위치 할 경우
+											var firstItemId = $("[item-id="+itemStr+"]").parent().attr("id");
+											var rowCnt = parseInt($("#"+firstItemId+" th").eq(1).attr("rowspan"))-1;
+											$("#"+firstItemId+" th").eq(1).attr("rowspan", rowCnt);
+										}else{
+											var rowCnt = parseInt($("[item-id="+itemStr+"]").attr("rowspan"))-1;
+							    			$("[item-id="+itemStr+"]").attr("rowspan", rowCnt);
+										}
+						    		}
+							    	$("#"+dId).css("display", "none");
+						    	}
+							}
+						}
+					}else{//항목 [data-index]미존재
+						if(textArr[j].charAt(0) == "G"){//항목그룹이 존재하는경우(1106 행렬전환 후)
+							var grpCd = textArr[j].substring(0, textArr[j].indexOf("T"));//항목그룹코드
+							var itemCd = textArr[j].substring(textArr[j].indexOf("T"));//항목코드
+
+							if(grpCd != ""){//항목그룹코드가 존재하는 경우
+								$("[item-id="+grpCd+"]").attr("colspan", parseInt($("[item-id="+grpCd+"]").attr("colspan"))-1);
+							}
+							$("[item-id="+itemCd+"]").css("display", "none");
+						}else if(textArr[j].charAt(0) == "T"){//항목이 처음 존재하는경우
+							var tmpText = textArr[j].substring(textArr[j].indexOf("T")+3);
+							if(tmpText != ""){
+								var parentId = $("[item-id="+tmpText+"]").parent().attr("id");
+								//$("[item-id="+tmpText+"]").css("display", "none");
+								$("#"+parentId).css("display", "none");
+							}
+						}
+					}
+				}
+			}
+    	}
+    }
+}
+</script>
+</head>
+<body id="stat_frame" style="height:auto;" onload="resizeIframeGen();">
+<div id="ti_btn" class="ti_btn e">
+	<span><!--소스코드 보안진단 -->
+		<label for="searchWrd124001"></label>
+		<div class="search_tab" style="display: none;">
+			<input type="text" id="searchWrd124001" name="searchWrd124001" placeholder="검색어를 입력하세요." onkeypress="if(event.keyCode==13) {idxSch('124001'); return false;}" title="통계표검색" />
+			<a class="search" href="javascript:idxSch('124001')" title="검색">검색</a>
+		</div>
+		<a id="excelButton" href="javascript:excelDown();" title="통계표다운로드">통계표다운로드</a>
+		<a href="javascript:fn_settingCheck('124001')" title="조회설정">조회설정</a>
+		<a href="javascript:fn_openFindData('124001');" id="dataMap_124001" title="데이터찾기">데이터찾기</a>
+
+		<!-- 23년 개선사항 -->
+		<a href="javascript:fn_heatMapCheck('124001');" id="heatMap_124001" title="heatMap">heatMap</a>
+		<a id="btn_p" href="javascript:fn_btnPClick('124001')" title="증감비교">증감비교</a>
+		<a href="javascript:fn_btnP('124001')" title="전체 증감비교">전체 증감비교</a>
+		<a href="javascript:fn_idxReset('124001')" title="초기화">초기화</a>
+	</span>
+</div>
+<div class="ti_stts_title">주택매매가격 동향</div>
+
+<div class="con_table">
+	<input type="hidden" id="comp1" value="">
+	<input type="hidden" id="comp2" value="">
+	<input type="hidden" id="oper" value="">
+	<input type="hidden" id="textData" value="">
+	<p>[단위 : %] </p>
+	<form id="choseChart" name="choseChart">
+	<!--소스코드 보안진단 -->
+	 <table id="t_Table_124001" summary="통계표 년도별 정보 제공 리스트 표입니다."class="table_style_2" style="white-space:nowrap;">
+		<caption>통계표</caption>
+			<thead>
+				<tr id='trHeader124001_1' data-headers='td_124001_cc_m' class='bg'>
+					<th id="head_m_124001" data-id="head_m_124001" scope="col" colspan="1" rowspan="2">&nbsp;</th> <!-- 소트_sunK-->
+					<!-- 표두-->
+					<th data-id='t124001_h_0' item-id='202303M' data-index='0' data-name='td_124001_cc_0' class="tc" data-headers='td_124001_cc_0'  rowspan='1'>2023<br/>03월</th>
+<th data-id='t124001_h_1' item-id='202304M' data-index='1' data-name='td_124001_cc_1' class="tc" data-headers='td_124001_cc_1'  rowspan='1'>2023<br/>04월</th>
+<th data-id='t124001_h_2' item-id='202305M' data-index='2' data-name='td_124001_cc_2' class="tc" data-headers='td_124001_cc_2'  rowspan='1'>2023<br/>05월</th>
+<th data-id='t124001_h_3' item-id='202306M' data-index='3' data-name='td_124001_cc_3' class="tc" data-headers='td_124001_cc_3'  rowspan='1'>2023<br/>06월</th>
+<th data-id='t124001_h_4' item-id='202307M' data-index='4' data-name='td_124001_cc_4' class="tc" data-headers='td_124001_cc_4'  rowspan='1'>2023<br/>07월</th>
+<th data-id='t124001_h_5' item-id='202308M' data-index='5' data-name='td_124001_cc_5' class="tc" data-headers='td_124001_cc_5'  rowspan='1'>2023<br/>08월</th>
+<th data-id='t124001_h_6' item-id='202309M' data-index='6' data-name='td_124001_cc_6' class="tc" data-headers='td_124001_cc_6'  rowspan='1'>2023<br/>09월</th>
+<th data-id='t124001_h_7' item-id='202310M' data-index='7' data-name='td_124001_cc_7' class="tc" data-headers='td_124001_cc_7'  rowspan='1'>2023<br/>10월</th>
+<th data-id='t124001_h_8' item-id='202311M' data-index='8' data-name='td_124001_cc_8' class="tc" data-headers='td_124001_cc_8'  rowspan='1'>2023<br/>11월</th>
+<th data-id='t124001_h_9' item-id='202312M' data-index='9' data-name='td_124001_cc_9' class="tc" data-headers='td_124001_cc_9'  rowspan='1'>2023<br/>12월</th>
+<th data-id='t124001_h_10' item-id='202401M' data-index='10' data-name='td_124001_cc_10' class="tc" data-headers='td_124001_cc_10'  rowspan='1'>2024<br/>01월</th>
+<th data-id='t124001_h_11' item-id='202402M' data-index='11' data-name='td_124001_cc_11' class="tc" data-headers='td_124001_cc_11'  rowspan='1'>2024<br/>02월</th>
+</tr><tr data-id='trSort124001'><th style='padding-bottom:5px;padding-top:5px;' data-headers='td_124001_cc_0_s' data-name='td_124001_cc_0_s' colspan='1'><a href="javascript:uuuuu('124001','td_124001_1', 55)"><img src='/potal/sub/img/etc/btn_02.png'  alt='아래' style='margin-right:1px'/></a><a href="javascript:uuuuu('124001','td_124001_1', 66)"><img src='/potal/sub/img/etc/btn_01.png'  alt='위' style='margin-right:1px'/></a><a href="javascript:ppppp('124001','td_124001_1', 1, 'td_124001_cc_0_s')"><img src='/potal/sub/img/etc/btn_04.png' id='m_td_124001_1' data-value='p_open' alt='p_open'/></a></th><th style='padding-bottom:5px;padding-top:5px;' data-headers='td_124001_cc_1_s' data-name='td_124001_cc_1_s' colspan='1'><a href="javascript:uuuuu('124001','td_124001_2', 55)"><img src='/potal/sub/img/etc/btn_02.png'  alt='아래' style='margin-right:1px'/></a><a href="javascript:uuuuu('124001','td_124001_2', 66)"><img src='/potal/sub/img/etc/btn_01.png'  alt='위' style='margin-right:1px'/></a><a href="javascript:ppppp('124001','td_124001_2', 1, 'td_124001_cc_1_s')"><img src='/potal/sub/img/etc/btn_04.png' id='m_td_124001_2' data-value='p_open' alt='p_open'/></a></th><th style='padding-bottom:5px;padding-top:5px;' data-headers='td_124001_cc_2_s' data-name='td_124001_cc_2_s' colspan='1'><a href="javascript:uuuuu('124001','td_124001_3', 55)"><img src='/potal/sub/img/etc/btn_02.png'  alt='아래' style='margin-right:1px'/></a><a href="javascript:uuuuu('124001','td_124001_3', 66)"><img src='/potal/sub/img/etc/btn_01.png'  alt='위' style='margin-right:1px'/></a><a href="javascript:ppppp('124001','td_124001_3', 1, 'td_124001_cc_2_s')"><img src='/potal/sub/img/etc/btn_04.png' id='m_td_124001_3' data-value='p_open' alt='p_open'/></a></th><th style='padding-bottom:5px;padding-top:5px;' data-headers='td_124001_cc_3_s' data-name='td_124001_cc_3_s' colspan='1'><a href="javascript:uuuuu('124001','td_124001_4', 55)"><img src='/potal/sub/img/etc/btn_02.png'  alt='아래' style='margin-right:1px'/></a><a href="javascript:uuuuu('124001','td_124001_4', 66)"><img src='/potal/sub/img/etc/btn_01.png'  alt='위' style='margin-right:1px'/></a><a href="javascript:ppppp('124001','td_124001_4', 1, 'td_124001_cc_3_s')"><img src='/potal/sub/img/etc/btn_04.png' id='m_td_124001_4' data-value='p_open' alt='p_open'/></a></th><th style='padding-bottom:5px;padding-top:5px;' data-headers='td_124001_cc_4_s' data-name='td_124001_cc_4_s' colspan='1'><a href="javascript:uuuuu('124001','td_124001_5', 55)"><img src='/potal/sub/img/etc/btn_02.png'  alt='아래' style='margin-right:1px'/></a><a href="javascript:uuuuu('124001','td_124001_5', 66)"><img src='/potal/sub/img/etc/btn_01.png'  alt='위' style='margin-right:1px'/></a><a href="javascript:ppppp('124001','td_124001_5', 1, 'td_124001_cc_4_s')"><img src='/potal/sub/img/etc/btn_04.png' id='m_td_124001_5' data-value='p_open' alt='p_open'/></a></th><th style='padding-bottom:5px;padding-top:5px;' data-headers='td_124001_cc_5_s' data-name='td_124001_cc_5_s' colspan='1'><a href="javascript:uuuuu('124001','td_124001_6', 55)"><img src='/potal/sub/img/etc/btn_02.png'  alt='아래' style='margin-right:1px'/></a><a href="javascript:uuuuu('124001','td_124001_6', 66)"><img src='/potal/sub/img/etc/btn_01.png'  alt='위' style='margin-right:1px'/></a><a href="javascript:ppppp('124001','td_124001_6', 1, 'td_124001_cc_5_s')"><img src='/potal/sub/img/etc/btn_04.png' id='m_td_124001_6' data-value='p_open' alt='p_open'/></a></th><th style='padding-bottom:5px;padding-top:5px;' data-headers='td_124001_cc_6_s' data-name='td_124001_cc_6_s' colspan='1'><a href="javascript:uuuuu('124001','td_124001_7', 55)"><img src='/potal/sub/img/etc/btn_02.png'  alt='아래' style='margin-right:1px'/></a><a href="javascript:uuuuu('124001','td_124001_7', 66)"><img src='/potal/sub/img/etc/btn_01.png'  alt='위' style='margin-right:1px'/></a><a href="javascript:ppppp('124001','td_124001_7', 1, 'td_124001_cc_6_s')"><img src='/potal/sub/img/etc/btn_04.png' id='m_td_124001_7' data-value='p_open' alt='p_open'/></a></th><th style='padding-bottom:5px;padding-top:5px;' data-headers='td_124001_cc_7_s' data-name='td_124001_cc_7_s' colspan='1'><a href="javascript:uuuuu('124001','td_124001_8', 55)"><img src='/potal/sub/img/etc/btn_02.png'  alt='아래' style='margin-right:1px'/></a><a href="javascript:uuuuu('124001','td_124001_8', 66)"><img src='/potal/sub/img/etc/btn_01.png'  alt='위' style='margin-right:1px'/></a><a href="javascript:ppppp('124001','td_124001_8', 1, 'td_124001_cc_7_s')"><img src='/potal/sub/img/etc/btn_04.png' id='m_td_124001_8' data-value='p_open' alt='p_open'/></a></th><th style='padding-bottom:5px;padding-top:5px;' data-headers='td_124001_cc_8_s' data-name='td_124001_cc_8_s' colspan='1'><a href="javascript:uuuuu('124001','td_124001_9', 55)"><img src='/potal/sub/img/etc/btn_02.png'  alt='아래' style='margin-right:1px'/></a><a href="javascript:uuuuu('124001','td_124001_9', 66)"><img src='/potal/sub/img/etc/btn_01.png'  alt='위' style='margin-right:1px'/></a><a href="javascript:ppppp('124001','td_124001_9', 1, 'td_124001_cc_8_s')"><img src='/potal/sub/img/etc/btn_04.png' id='m_td_124001_9' data-value='p_open' alt='p_open'/></a></th><th style='padding-bottom:5px;padding-top:5px;' data-headers='td_124001_cc_9_s' data-name='td_124001_cc_9_s' colspan='1'><a href="javascript:uuuuu('124001','td_124001_10', 55)"><img src='/potal/sub/img/etc/btn_02.png'  alt='아래' style='margin-right:1px'/></a><a href="javascript:uuuuu('124001','td_124001_10', 66)"><img src='/potal/sub/img/etc/btn_01.png'  alt='위' style='margin-right:1px'/></a><a href="javascript:ppppp('124001','td_124001_10', 1, 'td_124001_cc_9_s')"><img src='/potal/sub/img/etc/btn_04.png' id='m_td_124001_10' data-value='p_open' alt='p_open'/></a></th><th style='padding-bottom:5px;padding-top:5px;' data-headers='td_124001_cc_10_s' data-name='td_124001_cc_10_s' colspan='1'><a href="javascript:uuuuu('124001','td_124001_11', 55)"><img src='/potal/sub/img/etc/btn_02.png'  alt='아래' style='margin-right:1px'/></a><a href="javascript:uuuuu('124001','td_124001_11', 66)"><img src='/potal/sub/img/etc/btn_01.png'  alt='위' style='margin-right:1px'/></a><a href="javascript:ppppp('124001','td_124001_11', 1, 'td_124001_cc_10_s')"><img src='/potal/sub/img/etc/btn_04.png' id='m_td_124001_11' data-value='p_open' alt='p_open'/></a></th><th style='padding-bottom:5px;padding-top:5px;' data-headers='td_124001_cc_11_s' data-name='td_124001_cc_11_s' colspan='1'><a href="javascript:uuuuu('124001','td_124001_12', 55)"><img src='/potal/sub/img/etc/btn_02.png'  alt='아래' style='margin-right:1px'/></a><a href="javascript:uuuuu('124001','td_124001_12', 66)"><img src='/potal/sub/img/etc/btn_01.png'  alt='위' style='margin-right:1px'/></a><a href="javascript:ppppp('124001','td_124001_12', 1, 'td_124001_cc_11_s')"><img src='/potal/sub/img/etc/btn_04.png' id='m_td_124001_12' data-value='p_open' alt='p_open'/></a></th></tr>
+				</tr>
+			</thead>
+			<!-- 표측 -->
+			<tbody>
+	<tr id='tr_124001_1'>
+
+				<th class="tl" data-id='t124001_c1_0' item-id='T01' colspan='1' rowspan='1'>전국</th>
+
+	<td id='td_124001_1' data-id='td_124001_1'item-id='202303M' item-num=1>-0.8</td>
+<td id='td_124001_2' data-id='td_124001_2'item-id='202304M' item-num=2>-0.5</td>
+<td id='td_124001_3' data-id='td_124001_3'item-id='202305M' item-num=3>-0.2</td>
+<td id='td_124001_4' data-id='td_124001_4'item-id='202306M' item-num=4>0.0</td>
+<td id='td_124001_5' data-id='td_124001_5'item-id='202307M' item-num=5>0.0</td>
+<td id='td_124001_6' data-id='td_124001_6'item-id='202308M' item-num=6>0.2</td>
+<td id='td_124001_7' data-id='td_124001_7'item-id='202309M' item-num=7>0.3</td>
+<td id='td_124001_8' data-id='td_124001_8'item-id='202310M' item-num=8>0.2</td>
+<td id='td_124001_9' data-id='td_124001_9'item-id='202311M' item-num=9>0.0</td>
+<td id='td_124001_10' data-id='td_124001_10'item-id='202312M' item-num=10>-0.1</td>
+<td id='td_124001_11' data-id='td_124001_11'item-id='202401M' item-num=11>-0.1</td>
+<td id='td_124001_12' data-id='td_124001_12'item-id='202402M' item-num=12>-0.1</td>
+
+				</tr>
+
+	<tr id='tr_124001_2'>
+
+				<th class="tl" data-id='t124001_c1_1' item-id='T02' colspan='1' rowspan='1'>수도권</th>
+
+	<td id='td_124001_1' data-id='td_124001_1'item-id='202303M' item-num=1>-0.9</td>
+<td id='td_124001_2' data-id='td_124001_2'item-id='202304M' item-num=2>-0.5</td>
+<td id='td_124001_3' data-id='td_124001_3'item-id='202305M' item-num=3>-0.2</td>
+<td id='td_124001_4' data-id='td_124001_4'item-id='202306M' item-num=4>0.0</td>
+<td id='td_124001_5' data-id='td_124001_5'item-id='202307M' item-num=5>0.2</td>
+<td id='td_124001_6' data-id='td_124001_6'item-id='202308M' item-num=6>0.3</td>
+<td id='td_124001_7' data-id='td_124001_7'item-id='202309M' item-num=7>0.4</td>
+<td id='td_124001_8' data-id='td_124001_8'item-id='202310M' item-num=8>0.3</td>
+<td id='td_124001_9' data-id='td_124001_9'item-id='202311M' item-num=9>0.1</td>
+<td id='td_124001_10' data-id='td_124001_10'item-id='202312M' item-num=10>-0.1</td>
+<td id='td_124001_11' data-id='td_124001_11'item-id='202401M' item-num=11>-0.2</td>
+<td id='td_124001_12' data-id='td_124001_12'item-id='202402M' item-num=12>-0.1</td>
+
+				</tr>
+
+	<tr id='tr_124001_3'>
+
+				<th class="tl" data-id='t124001_c1_2' item-id='T03' colspan='1' rowspan='1'>서울</th>
+
+	<td id='td_124001_1' data-id='td_124001_1'item-id='202303M' item-num=1>-0.5</td>
+<td id='td_124001_2' data-id='td_124001_2'item-id='202304M' item-num=2>-0.3</td>
+<td id='td_124001_3' data-id='td_124001_3'item-id='202305M' item-num=3>-0.1</td>
+<td id='td_124001_4' data-id='td_124001_4'item-id='202306M' item-num=4>0.1</td>
+<td id='td_124001_5' data-id='td_124001_5'item-id='202307M' item-num=5>0.2</td>
+<td id='td_124001_6' data-id='td_124001_6'item-id='202308M' item-num=6>0.3</td>
+<td id='td_124001_7' data-id='td_124001_7'item-id='202309M' item-num=7>0.3</td>
+<td id='td_124001_8' data-id='td_124001_8'item-id='202310M' item-num=8>0.3</td>
+<td id='td_124001_9' data-id='td_124001_9'item-id='202311M' item-num=9>0.1</td>
+<td id='td_124001_10' data-id='td_124001_10'item-id='202312M' item-num=10>-0.1</td>
+<td id='td_124001_11' data-id='td_124001_11'item-id='202401M' item-num=11>-0.1</td>
+<td id='td_124001_12' data-id='td_124001_12'item-id='202402M' item-num=12>-0.1</td>
+
+				</tr>
+
+	<tr id='tr_124001_4'>
+
+				<th class="tl" data-id='t124001_c1_3' item-id='T04' colspan='1' rowspan='1'>강남</th>
+
+	<td id='td_124001_1' data-id='td_124001_1'item-id='202303M' item-num=1>-0.5</td>
+<td id='td_124001_2' data-id='td_124001_2'item-id='202304M' item-num=2>-0.3</td>
+<td id='td_124001_3' data-id='td_124001_3'item-id='202305M' item-num=3>0.0</td>
+<td id='td_124001_4' data-id='td_124001_4'item-id='202306M' item-num=4>0.1</td>
+<td id='td_124001_5' data-id='td_124001_5'item-id='202307M' item-num=5>0.2</td>
+<td id='td_124001_6' data-id='td_124001_6'item-id='202308M' item-num=6>0.4</td>
+<td id='td_124001_7' data-id='td_124001_7'item-id='202309M' item-num=7>0.4</td>
+<td id='td_124001_8' data-id='td_124001_8'item-id='202310M' item-num=8>0.3</td>
+<td id='td_124001_9' data-id='td_124001_9'item-id='202311M' item-num=9>0.1</td>
+<td id='td_124001_10' data-id='td_124001_10'item-id='202312M' item-num=10>-0.1</td>
+<td id='td_124001_11' data-id='td_124001_11'item-id='202401M' item-num=11>-0.1</td>
+<td id='td_124001_12' data-id='td_124001_12'item-id='202402M' item-num=12>-0.1</td>
+
+				</tr>
+
+	<tr id='tr_124001_5'>
+
+				<th class="tl" data-id='t124001_c1_4' item-id='T05' colspan='1' rowspan='1'>강북</th>
+
+	<td id='td_124001_1' data-id='td_124001_1'item-id='202303M' item-num=1>-0.6</td>
+<td id='td_124001_2' data-id='td_124001_2'item-id='202304M' item-num=2>-0.4</td>
+<td id='td_124001_3' data-id='td_124001_3'item-id='202305M' item-num=3>-0.2</td>
+<td id='td_124001_4' data-id='td_124001_4'item-id='202306M' item-num=4>-0.1</td>
+<td id='td_124001_5' data-id='td_124001_5'item-id='202307M' item-num=5>0.1</td>
+<td id='td_124001_6' data-id='td_124001_6'item-id='202308M' item-num=6>0.2</td>
+<td id='td_124001_7' data-id='td_124001_7'item-id='202309M' item-num=7>0.3</td>
+<td id='td_124001_8' data-id='td_124001_8'item-id='202310M' item-num=8>0.2</td>
+<td id='td_124001_9' data-id='td_124001_9'item-id='202311M' item-num=9>0.1</td>
+<td id='td_124001_10' data-id='td_124001_10'item-id='202312M' item-num=10>-0.1</td>
+<td id='td_124001_11' data-id='td_124001_11'item-id='202401M' item-num=11>-0.1</td>
+<td id='td_124001_12' data-id='td_124001_12'item-id='202402M' item-num=12>-0.1</td>
+
+				</tr>
+
+
+			</tbody>
+		</table>
+
+            <p class="mt_5 ft_style">
+            	<span class="tit bold" id="srcTitle" style="">출처:</span>
+            	<span class="dp-if">한국부동산원「전국주택가격동향조사」</span>
+           	</p>
+
+
+
+            <p class="mt_5 ft_style">
+            	<span class="tit bold" id="srcTitle" style="">주석:</span>
+            	<span class="dp-if">월별 주택 매매가격 증감률</span>
+           	</p>
+
+
+         	<p class="mt_5 ft_style">
+				<span class="tit bold" id="srcTitle" style="display: block;">관련 KOSIS 통계보기</span>
+
+					<div class="dp-if">
+						<a href="javascript:window.open('http://kosis.kr/statisticsList/statisticsListIndex.do?menuId=M_01_01&vwcd=MT_ZTITLE&parmTabId=M_01_01&outLink=Y&parentId=I1.1;I1_7.2;#I1_7.2')">[전국주택가격동향조사]</a> 통계보기
+					</div>
+
+			</p>
+
+	</form>
+</div>
+</body>
+</html>

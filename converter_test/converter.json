@@ -9,6 +9,9 @@
 					{
 						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
 						"name": "DATE"
+					}, {
+						"selector" : "#t_Table_124001 tbody > tr:nth-of-type(1) > td",
+						"name" : "전국"
 					}
 				]
 			},
@@ -29,17 +32,16 @@
 						"name": "DATE2",
 						"slice": { "start": 1 },
 						"converter" : "regx(regx='\\D', replace=''), regx(regx='$', replace='.'), float"
-					}
-				]
-			},
-			"dateConverter": {
-				"type": "list",
-				"pattern": [
-					{
+					}, {
 						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
-						"name": "DATE",
+						"name": "DATE3",
 						"slice": { "start": 1 },
 						"converter": "func.contest1"
+					}, {
+						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+						"name": "DATE4",
+						"slice": { "start": 1 },
+						"converter": "dateformat"
 					}
 				]
 			}
