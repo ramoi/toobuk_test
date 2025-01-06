@@ -1,0 +1,49 @@
+    {
+    "housetrade" : {
+                "url" : "https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&idx_cd=1240&freq=Y&period=N",
+                "bs.type" : "html.parser",
+                "output" : {
+                            "date" : {    "type" : "list",
+                                       "pattern" : [
+                                                    {
+                                                      "selector" : "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+                                                      "name" : "DATE",
+                                                      "skip": "white",
+                                                      "converter" : "regx(regx=\"(?P<YYYY>\\d{4})(?P<MM>\\d{2}).\", replace=\"\\g<YYYY>-\\g<MM>\")"
+                                                    }
+                                                   ]
+                                         },
+                    "changeRate" : {     "type" : "list",
+                                        "pattern" : [
+                                                     {
+                                                        "selector" : "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+                                                        "name" : "DATE",
+                                                       "skip": "slice(sa={ 'start': 1})",
+                                                       "converter" : "regx(regx=\"(?P<YYYY>\\d{4})(?P<MM>\\d{2}).\", replace=\"\\g<YYYY>-\\g<MM>\")"
+                                                    }, {
+                                                        "selector" : "#t_Table_124001 tbody > tr:nth-of-type(1) > td",
+                                                        "name" : "COUNTRY",
+                                                        "converter" : "float"
+                                                    }, {
+                                                        "selector" : "#t_Table_124001 tbody > tr:nth-of-type(2) > td",
+                                                        "name" : "CAPATIAL",
+                                                        "converter" : "float"
+                                                    }, {
+                                                        "selector" : "#t_Table_124001 tbody > tr:nth-of-type(3) > td",
+                                                        "name" : "SEOUL",
+                                                        "converter" : "float"
+                                                    }, {
+                                                        "selector" : "#t_Table_124001 tbody > tr:nth-of-type(4) > td",
+                                                        "name" : "SOUTH",
+                                                        "converter" : "float"
+                                                    }, {
+                                                        "selector" : "#t_Table_124001 tbody > tr:nth-of-type(5) > td",
+                                                        "name" : "NORTH",
+                                                        "converter" : "float"
+                                                    }
+                                                    ]
+
+                                    }
+                            }
+                }
+        }

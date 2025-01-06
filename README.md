@@ -7,6 +7,10 @@ toobuk_test는 Toobuk를 사용하면서 사용할 수 있는 다양한 예제�
 1. [Post 방식으로 크롤링하기](#Get-방식으로-크롤링하기)
 1. [Parameter 설정하기](#Parameter-설정하기)
 1. [Output 설정하기](#Output-설정하기)
+   1. [Output 설정하기](#Output-설정하기)
+   1. [Output 하나만 가져오기](#Output-하나만-가져오기)
+   1. [Output 여러개 가져오기](#Output-여러개-가져오기)
+   1. [Output 전체 가져오기](#Output-전체-가져오기)
 1. [List/Single 데이타 추출](#List/Single-데이타-추출)
    1. [List로 추출하기](#List로-추출하기)
    1. [Single로 추출하기](#Single로-추출하기)
@@ -209,6 +213,77 @@ pip list
    크롤링 한 데이타(html 소스)에서 의미있는 데이타를 추출행 합니다. 어떤 상세 정보일 경우 **단일건**으로 읽어들여야 하고, 리스트 형식인 경우 **배열**로 읽어들여야 합니다.
    ([List/Single 데이타 추출](#List/Single-데이타-추출) 참조)
    그리고  읽어온 데이타에서 가공을 해야 하는 경우도 있겠죠. (  [읽어온 데이타 skip 하기](#읽어온-데이타-skip-하기) / [변환하기](#변환하기) 참조)  
+
+   ### Output 설정하기
+   04_output을 보세요.  
+   보시는 것처럼 output key값으로 output을 정의해 나가면 됩니다. 
+   소스에서는 date와 changeRate 2개가 output으로 설정이되어 있습니다. 
+
+    {
+    "housetrade" : {
+                "url" : "https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&idx_cd=1240&freq=Y&period=N",
+                "bs.type" : "html.parser",
+                "output" : {
+                            "date" : {    "type" : "list",
+                                       "pattern" : [
+                                                    {
+                                                      "selector" : "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+                                                      "name" : "DATE",
+                                                      "skip": "white",
+                                                      "converter" : "regx(regx=\"(?P<YYYY>\\d{4})(?P<MM>\\d{2}).\", replace=\"\\g<YYYY>-\\g<MM>\")"
+                                                    }
+                                                   ]
+                                         },
+                    "changeRate" : {     "type" : "list",
+                                        "pattern" : [
+                                                     {
+                                                        "selector" : "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+                                                        "name" : "DATE",
+                                                       "skip": "slice(sa={ 'start': 1})",
+                                                       "converter" : "regx(regx=\"(?P<YYYY>\\d{4})(?P<MM>\\d{2}).\", replace=\"\\g<YYYY>-\\g<MM>\")"
+                                                    }, {
+                                                        "selector" : "#t_Table_124001 tbody > tr:nth-of-type(1) > td",
+                                                        "name" : "COUNTRY",
+                                                        "converter" : "float"
+                                                    }, {
+                                                        "selector" : "#t_Table_124001 tbody > tr:nth-of-type(2) > td",
+                                                        "name" : "CAPATIAL",
+                                                        "converter" : "float"
+                                                    }, {
+                                                        "selector" : "#t_Table_124001 tbody > tr:nth-of-type(3) > td",
+                                                        "name" : "SEOUL",
+                                                        "converter" : "float"
+                                                    }, {
+                                                        "selector" : "#t_Table_124001 tbody > tr:nth-of-type(4) > td",
+                                                        "name" : "SOUTH",
+                                                        "converter" : "float"
+                                                    }, {
+                                                        "selector" : "#t_Table_124001 tbody > tr:nth-of-type(5) > td",
+                                                        "name" : "NORTH",
+                                                        "converter" : "float"
+                                                    }
+                                                    ]
+
+                                    }
+                            }
+                }
+        }
+
+   ### Output 전체 가져오기
+   output에 정의된 모든 값을 추출하는 방법은 간단합니다. 우리가 그 동안 해왔죠.
+
+      htb = Toobuk('output')
+      htb.grumble('housetrade')
+   ### Output 하나만 가져오기     
+   output 에서 단 하나만 가져오려면. /를 하고 output명을 적어주시면 됩니다.
+      
+      htb.grumble('housetrade/date')
+   ### Output 여러개 가져오기
+   output 에서 단 하나만 가져오려면. /를 하고 output명을 &로 적어주시면 됩니다.
+
+      htb.grumble('housetrade/date&changeRate') 
+  
+위 설정 파일에서 skip, converter 같은 좀 생소한 key명은 아래서 확인하실 수 있습니다.
    
 
 ## List/Single 데이타 추출
@@ -249,7 +324,7 @@ pip list
 위 내용을 보며 눈치채셨지요. 사실, 소스 수정은 최소한이며 대부분은 설정 파일을 통해 제어됩니다.   
 이번 단락에서는 읽어온 데이타 중 일부는 skip 하는 기능에 대하여 알아보겠습니다.  
 skip은 [List로-추출하기](#List로-추출하기)에서만 가능합니다. 사실 Single 에서는 단일 row이기에 skip이 의미가 없습니다.  
-05_skip를 보시기 바랍니다.
+06_skip를 보시기 바랍니다.
 
 일단, 아래 주소를 확인해보시죠.
 https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&idx_cd=1240&freq=Y&period=N
@@ -360,7 +435,7 @@ https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&id
 
    간단하죠. text는 읽어온 selector text 내용이고 r은 결과물입니다. r은 거의 신경쓰시지 않아도 됩니다.
 
-   05_skip를 확인해주세요.
+   06_skip를 확인해주세요.
 
 
 ### 여러 skip을 같이 사용하기
@@ -379,7 +454,7 @@ https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&id
 ## 변환하기
 이번 단락에서는 읽어온 데이타를 변환하는 기능에 대해서 알아보겠습니다.  
 사실, 사용법은 [읽어온 데이타 skip 하기](#읽어온-데이타-skip-하기)와 대동소이합니다.  
-06_converter 를 보시기 바랍니다.
+07_converter 를 보시기 바랍니다.
 
 일단, 아래 주소를 확인해보시죠.
 https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&idx_cd=1240&freq=Y&period=N
@@ -482,7 +557,7 @@ dateformat 함수는 아래와 같습니다. 위에서 본 정규식과 차이�
 
 간단하죠. text는 읽어온 selector text 내용이고 r은 결과물입니다. r은 거의 신경쓰시지 않아도 됩니다.
 
-06_converter 확인해주세요.
+07_converter 확인해주세요.
 
 
 ### 변환기 여러개 사용하기
@@ -505,7 +580,7 @@ skip을 이용하여 whitespace 문자열은 건너띄고,
 toobuk에서는 페이지 번호를 지정할 수 있습니다.  
 크롤링하고자 하는 페이징 정보를 줄 수 있죠. 
 아래 내용을 보시죠.  
-소스는 07_for_loop를 확인하세요
+소스는 08_for_loop를 확인하세요
 
 
       "paging" : {
@@ -625,7 +700,7 @@ output을 설정해서 뽑아낼 데이타를 지정할 수 있습니다.
       post 방식
 
    ### 사용자 정의 Connector
-   07_connector 소스를 봐주세요
+   09_connector 소스를 봐주세요
    connectorTest.py 소스를 그대로 옮기면 아래와 같습니다.
 
       class CustomGetConnector(AbstractConnector):
@@ -655,7 +730,7 @@ output을 설정해서 뽑아낼 데이타를 지정할 수 있습니다.
             "conn.type" : "connectorTest.CustomGetConnector",
 
    ### Selenium을 Connector로 추가하기
-   08_selenium을 봐주세요.  
+   10_selenium을 봐주세요.  
    우리가 selenium을 사용하기 위해선 Connector를 상속받아서 구현해야 합니다.  
    그리고 07_connector에서 기술한 메소드 중에서 connect 메소드를 구현해 주시면 됩니다.  
    seleniumTest.py룰 보시면, Connector 2개를 구현했습니다.  
