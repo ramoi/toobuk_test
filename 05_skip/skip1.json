@@ -12,13 +12,33 @@
 					}
 				]
 			},
-			"date": {
+			"dateStart": {
 				"type": "list",
 				"pattern": [
 					{
 						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
 						"name": "DATE",
-						"slice": { "start": 1 }
+						"skip": "slice(sa={ 'start': 1})"
+					}
+				]
+			},
+			"dateEnd": {
+				"type": "list",
+				"pattern": [
+					{
+						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+						"name": "DATE",
+						"skip": "slice(sa={ 'end': 3})"
+					}
+				]
+			},
+			"dateBoth": {
+				"type": "list",
+				"pattern": [
+					{
+						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+						"name": "DATE",
+						"skip": "slice(sa={ 'start':1, 'end': 3})"
 					}
 				]
 			},
@@ -28,7 +48,27 @@
 					{
 						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
 						"name": "DATE",
-						"slice": [{"start": 1, "end": 2}, {"start": 11, "end": 13} ]
+						"skip": "slice(sa=[{'start': 1, 'end': 2}, {'start': 11, 'end': 13} ])"
+					}
+				]
+			},
+			"dateWhite": {
+				"type": "list",
+				"pattern": [
+					{
+						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+						"name": "DATE",
+						"skip": "white"
+					}
+				]
+			},
+			"dateSkipJan": {
+				"type": "list",
+				"pattern": [
+					{
+						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+						"name": "DATE",
+						"skip": "skipJan"
 					}
 				]
 			},
@@ -42,13 +82,13 @@
 					}
 				]
 			},
-			"dateSkipValue": {
+			"date": {
 				"type": "list",
 				"pattern": [
 					{
 						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
 						"name": "DATE",
-						"skip.value": "202402월"
+						"skip": "slice(sa={ 'start': 0, 'end':5 }),white,skipJan"
 					}
 				]
 			}

@@ -21,7 +21,7 @@
 					{
 						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
 						"name": "DATE",
-						"slice": { "start": 1 },
+						"skip": "white",
 						"converter" : "regx(regx=\"(?P<YYYY>\\d{4})(?P<MM>\\d{2}).\", replace=\"\\g<YYYY>-\\g<MM>\")"
 					}, {
 						"selector" : "#t_Table_124001 tbody > tr:nth-of-type(1) > td",
@@ -30,17 +30,17 @@
 					}, {
 						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
 						"name": "DATE2",
-						"slice": { "start": 1 },
+						"skip": "white",
 						"converter" : "regx(regx='\\D', replace=''), regx(regx='$', replace='.'), float"
 					}, {
 						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
 						"name": "DATE3",
-						"slice": { "start": 1 },
+						"skip": "white",
 						"converter": "func.contest1"
 					}, {
 						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
 						"name": "DATE4",
-						"slice": { "start": 1 },
+						"skip": "white",
 						"converter": "dateformat"
 					}
 				]

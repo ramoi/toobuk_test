@@ -1,6 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from toobuk.connector import AbstractConnector
+from toobuk.connector_v1 import AbstractConnector
 from toobuk.tlogger import TLoggerFactory
 from bs4 import BeautifulSoup
 
@@ -27,7 +27,7 @@ class SeleniumConnector(AbstractConnector):
 
 class SeleniumLoopConnector(AbstractConnector):
 
-    def connect(self, url, parameter):
+    def connect(self, url, headers, parameter):
 
         # 이게 pc에 설치되어있는 chrome을 제어하는거라서 그냥 실행시키면 창이 나오고
         # 입력되고 하는게 다 보인다.
@@ -40,12 +40,10 @@ class SeleniumLoopConnector(AbstractConnector):
         # while True :
         for i in range(10):
             print('idx==================>>', i)
-            bs = BeautifulSoup(driver.page_source, self._json_['bs.type'],
-                               from_encoding='utf-8' if self._json_.get('encoding') is None else self._json_[
-                                   'encoding'])
+            bs = BeautifulSoup(driver.page_source,  self._bsType_, from_encoding=self._encoding_ )
             dateList = bs.select('.newsContents  .tit_section')
 
-            if len(dateList) > 1:
+            if len(dateList) > 3:
                 # driver.execute_script("""
                 # document.querySelector('.newsContents .head_section:nth-child(n+2) + .list_newsinfo').remove();
                 # """)
@@ -61,7 +59,8 @@ class SeleniumLoopConnector(AbstractConnector):
         return bs
 
     def afterConnect(self, bs):
-        for e in bs.select('.newsContents .head_section:nth-child(n+2) + .list_newsinfo'):
-            e.decompose()
+        # print(bs)
+        # for e in bs.select('.newsContents .head_section:nth-child(n+2) + .list_newsinfo'):
+        #     e.decompose()
 
         return bs

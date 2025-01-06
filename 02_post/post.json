@@ -1,0 +1,37 @@
+{
+"qa" : {
+            "url" : "https://kosis.kr/civilComplaint/qnaList.do",
+            "conn.type" : "post",
+            "bs.type" : "html.parser",
+            "output" : {
+                        "qa" : {    "type" : "list",
+                                   "pattern" : [
+                                                {
+                                                    "selector" : ".bd_lst_tit a",
+                                                    "name" : "TITLE"
+                                                }
+                                               ]
+                                     }
+                        }
+                },
+  "multi.param" : {
+    "url" : "https://kosis.kr/civilComplaint/qnaList.do",
+    "conn.type" : "post",
+    "bs.type" : "html.parser",
+    "parameter" :  [{"searchKeyword": "도시", "searchCondition": "subject"}, {"searchKeyword": "수도", "searchCondition": "subject"}],
+    "output" : {
+      "search" : {
+        "type" : "list",
+        "pattern" : [
+          {
+            "selector" : ".bd_lst_tit a",
+            "name" : "TITLE"
+          }, {
+            "selector" : ".bd_lst_tbl > tbody td:nth-of-type(6)",
+            "name" : "CNT"
+          }
+        ]
+      }
+    }
+  }
+}

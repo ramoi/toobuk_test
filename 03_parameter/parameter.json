@@ -1,0 +1,80 @@
+{
+  "get" : {
+    "url" : "https://kosis.kr/civilComplaint/qnaList.do?searchKeyword=#searchKeyword#&searchCondition=#searchCondition#",
+    "conn.type" : "get",
+    "bs.type" : "html.parser",
+    "parameter": [
+      {
+        "searchKeyword": "지방",
+        "searchCondition": "subject"
+      },
+      {
+        "searchKeyword": "수도",
+        "searchCondition": "subject"
+      }
+    ],
+    "output" : {
+      "search" : {
+        "type" : "list",
+        "pattern" : [
+          {
+            "selector" : ".bd_lst_tit a",
+            "name" : "TITLE"
+          }, {
+            "selector" : ".bd_lst_tbl > tbody td:nth-of-type(6)",
+            "name" : "CNT"
+          }
+        ]
+      }
+    }
+  },
+  "post" : {
+    "url": "https://kosis.kr/civilComplaint/qnaList.do",
+    "conn.type": "post",
+    "bs.type": "html.parser",
+    "parameter": [
+      {
+        "searchKeyword": "지방",
+        "searchCondition": "subject"
+      },
+      {
+        "searchKeyword": "수도",
+        "searchCondition": "subject"
+      }
+    ],
+    "output": {
+      "search": {
+        "type": "list",
+        "pattern": [
+          {
+            "selector": ".bd_lst_tit a",
+            "name": "TITLE"
+          },
+          {
+            "selector": ".bd_lst_tbl > tbody td:nth-of-type(6)",
+            "name": "CNT"
+          }
+        ]
+      }
+    }
+  },
+  "empty.param" : {
+    "url" : "https://kosis.kr/civilComplaint/qnaList.do",
+    "conn.type" : "post",
+    "bs.type" : "html.parser",
+    "output" : {
+      "search" : {
+        "type" : "list",
+        "pattern" : [
+          {
+            "selector" : ".bd_lst_tit a",
+            "name" : "TITLE"
+          }, {
+            "selector" : ".bd_lst_tbl > tbody td:nth-of-type(6)",
+            "name" : "CNT"
+          }
+        ]
+      }
+    }
+  }
+}
