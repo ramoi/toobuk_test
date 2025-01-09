@@ -45,5 +45,28 @@
 
                                     }
                             }
+                },
+      "attrList" : {
+        "url" : "https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&idx_cd=1240&freq=Y&period=N",
+        "bs.type" : "html.parser",
+        "output" : {
+          "other" : {    "type" : "list",
+            "pattern" : [
+              {
+                "selector" : "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+                "target" : [ {
+                  "attr" :  "__text__",
+                  "name": "date",
+                  "converter" : "regx(regx=\"(?P<YYYY>\\d{4})(?P<MM>\\d{2}).\", replace=\"\\g<YYYY>-\\g<MM>\")"
+                },  {
+                  "attr" :  "item-id",
+                  "name": "id"
                 }
+                ],
+                "skip": "white"
+              }
+            ]
+          }
+        }
+      }
         }

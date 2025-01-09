@@ -11,9 +11,12 @@ toobuk_test는 Toobuk를 사용하면서 사용할 수 있는 다양한 예제�
    1. [Output 하나만 가져오기](#Output-하나만-가져오기)
    1. [Output 여러개 가져오기](#Output-여러개-가져오기)
    1. [Output 전체 가져오기](#Output-전체-가져오기)
-1. [List/Single 데이타 추출](#List/Single-데이타-추출)
+1. [Output List/Single 데이타 추출](#Output-List/Single-데이타-추출)
    1. [List로 추출하기](#List로-추출하기)
    1. [Single로 추출하기](#Single로-추출하기)
+1. [Output 추출 패턴 적용하기](#Output-추출-패턴-적용하기)
+   1. [text값 가져오기](#text값 가져오기)
+   1. [속성값 가져오기](#속성값 가져오기)
 1. [읽어온 데이타 skip 하기](#읽어온-데이타-skip-하기)
    1. [미리 정의된 skip](#미리-정의된-skip)
       1. [slice](#slice)
@@ -37,7 +40,21 @@ toobuk_test는 Toobuk를 사용하면서 사용할 수 있는 다양한 예제�
    1. [Connector 생명주기](#Connector 생명주기)
    1. [미리 정의된 Connector](#미리 정의된 Connector)
    1. [사용자 정의 Connector](#사용자 정의 Connector)
+   1. [Connector 추가](#Connector-추가)
    1. [Selenium을 Connector로 추가하기](#Selenium을 Connector로 추가하기)
+1. [xml 다루기](#xml-다루기)
+
+## 개요
+toobuk는 크롤링을 해 온 데이타를 쉽게 추출할 수 있는 도구입니다.  
+1. 이미 html을  긁어올 수 있는 여러 라이브러리가 있구요.
+2. html에서 의미있는 데이터를 뽑아내는 라이브러리가 존재합니다.
+
+핵심은 데이타를 추출할 때, 로직이나 패턴이 소스에 잘 정리가 안되어 있는 경우가 많다는 거죠  
+그 부분을 따로 설정 파일로 분리하는게 핵심입니다.  
+경험 많은 개발자분들은 아마 mybatis를 생각하실 수도 있겠네요.  
+
+데이타 추출은 beautifulsoup를 사용했습니다. 아래를 참조하세요.  
+https://www.crummy.com/software/BeautifulSoup/bs4/doc.ko/#
 
 ## 설치
 toobuk은 기본적으로 beautifulsoup4, requests 를 이용합니다.   
@@ -319,6 +336,48 @@ pip list
           }
         ]
       }
+## Output 추출 패턴 적용하기
+   ### text값 가져오기
+   아래처럼 선언된 태그 안에서 사용된 text 문자열입니다. 아래를 보시면 text 가 text 값이되며 01_get 소스를 보시면 
+     
+      <p>text</p>
+
+   01_get 소스르 보시면, 아래와 같이 selector오 name이 있습니다. 이와 같이 되면 text값을 가져올 수 있습니다. 
+   그리고 아래  [속성값 가져오기](#속성값-가져오기) 사용할 수 있는 방법이 있숩니다.
+
+                  "output" : {
+                        "date" : {    "type" : "list",
+                                   "pattern" : [
+                                                {
+                                                    "selector" : "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+                                                    "name" : "DATE"
+                                                }
+                                               ]
+                                     }
+                        }
+                }
+   ### 속성값 가져오기
+   속성값을 가져올 수도 있겠죠. 아래 태그에서 data-index 값을 가져오고 싶다면 어떻게 해야 하까요?  
+            
+      <th data-id="t124001_h_0" item-id="202312M" data-index="0" data-name="td_124001_cc_0" class="tc" data-headers="td_124001_cc_0" rowspan="1">2023<br>12월</th>
+
+   04_output 에서 other로 선언된 output을 보시기 바랍니다.  
+   target 이라는 이름으로 배열을 요소로 attr으 태그에서 가져오려는 속성명을 name은 뽑아온 후, 사용할 명을 선언하고 있습니다.
+   attr이 __text__인 경우는 위에 [text값 가져오기](#text값-가져오기)와 같습니다. 즉, text도 가져오고 속성도 가져오고 싶은 경우 사용하면 되는 거죠.
+
+                                  "other" : {    "type" : "list",
+                                       "pattern" : [
+                                                    {
+                                                      "selector" : "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+                                                      "target" : [ {
+                                                        "attr" :  "__text__",
+                                                        "name": "date",
+                                                        "converter" : "regx(regx=\"(?P<YYYY>\\d{4})(?P<MM>\\d{2}).\", replace=\"\\g<YYYY>-\\g<MM>\")"
+                                                      },  {
+                                                        "attr" :  "data-index",
+                                                        "name": "index"
+                                                      }
+
 
 ## 읽어온 데이타 skip 하기
 위 내용을 보며 눈치채셨지요. 사실, 소스 수정은 최소한이며 대부분은 설정 파일을 통해 제어됩니다.   
@@ -772,3 +831,36 @@ output을 설정해서 뽑아낼 데이타를 지정할 수 있습니다.
               # 잊지말고 동작이 끝나면 driver을 종료할것!
               driver.quit()
               return bs
+
+
+## xml 다루기
+형식이 html이 아닌 xml인 경우도 역시 크롤링을 하여 데이타를 추출할 수 있는데요. 이 부분 역시 beautifulsoup 을 참조하시면 됩니다
+https://www.crummy.com/software/BeautifulSoup/bs4/doc.ko/#
+
+      pip install lxml
+
+
+11_xml 소스를 참조하세요.  
+bs.type이 xml로 설정되어 있습니다. 그리고 outout pattern에서 뽑아내고자 하는 값을 적용하면 됩니다.
+
+
+      {
+      "euroDaily" : {
+                  "url" : "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+                  "bs.type" : "xml",
+                  "output" : {
+                              "curr" : {    "type" : "list",
+                                         "pattern" : [
+                                                      {
+                                                          "selector" : "Cube Cube Cube",
+                                                          "target": [
+                                                            "currency,
+                                                            { "name" : "rate", attr:"rate", converter:
+                                                            ]
+                                                      }
+                                                     ]
+                                           }
+                              }
+                      }
+      }
+

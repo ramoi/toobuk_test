@@ -1,0 +1,21 @@
+{
+"euroDaily" : {
+            "url" : "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+            "bs.type" : "xml",
+            "output" : {
+                        "curr" : {    "type" : "list",
+                                   "pattern" : [
+                                                {
+                                                    "selector" : "Cube Cube Cube",
+                                                    "target": [ {"attr": "currency",
+                                                      "name": "currency",
+                                                      "converter" : "regx(regx=\"(?P<CURRENCY>\\w+)$\", replace=\"국가 \\g<CURRENCY>\")"
+                                                    },
+                                                      "rate"
+                                                      ]
+                                                }
+                                               ]
+                                     }
+                        }
+                }
+}

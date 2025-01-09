@@ -5,7 +5,6 @@
     "bs.type": "html.parser",
     "output": {
       "qaInfo": {
-        "type": "single",
         "pattern": [
           {
             "selector": ".totals",
