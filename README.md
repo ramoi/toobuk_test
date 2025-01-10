@@ -1,8 +1,10 @@
-
-toobuk_test는 Toobuk를 사용하면서 사용할 수 있는 다양한 예제를 모았습니다.
+# TOOBUK
+beautifulsoup을 이용하여 웹 크롤링을 쉽게할 수 있도록 도와주는 모듈입니다.
 
 ## 차례
+1. [TooBuk이란?](#개요)
 1. [설치](#설치)
+1. [참조](#참조)
 1. [Get 방식으로 크롤링하기](#Get-방식으로-크롤링하기)
 1. [Post 방식으로 크롤링하기](#Get-방식으로-크롤링하기)
 1. [Parameter 설정하기](#Parameter-설정하기)
@@ -43,15 +45,35 @@ toobuk_test는 Toobuk를 사용하면서 사용할 수 있는 다양한 예제�
    1. [Connector 추가](#Connector-추가)
    1. [Selenium을 Connector로 추가하기](#Selenium을-Connector로-추가하기)
 1. [xml 다루기](#xml-다루기)
+1. [클래스 다이어그림](#클래스-다이어그램)
+1. [다음버젼에서는...](#다음버젼에서는...)
+
 
 ## 개요
-toobuk는 크롤링을 해 온 데이타를 쉽게 추출할 수 있는 도구입니다.  
-1. 이미 html을  긁어올 수 있는 여러 라이브러리가 있구요.
-2. html에서 의미있는 데이터를 뽑아내는 라이브러리가 존재합니다.
+toobuk은 웹크롤링을 손쉽게 할 수 있는 라이브러리입니다.   
+우리는 보통 크롤링을 한다고 한다면 대게 아래와 같은 흐름을 따를 겁니다.
+1. url로 해당 사이트를 접속한 뒤(보통, urlopen함수 혹은 requests 라이브러리를 이용)
+2. 크롤링 대상이 되는 웹페이지의 html 소스를 가져옵니다
+3. 해당 소스에서 얻고자 하는 정보를 가져옵니다.(보통 beautifulsoup 라이브러리를 이용) 보통은 아래 두가지 방법을 이용해서 가져오죠.
+   1) css selector
+   2) 정규표현식
+4. 얻어온 데이타를 그대로 수집하는 경우도 있지만, 숫자에서 콤마를 제거한다거나 날짜 형식을 바꾼다거나 아니면 다른 이유로 수집한 데이타를 가공을 하게 됩니다
+5. 최종 데이타를 저장 혹은 사용자가 볼 수 있는 페이지에 보내겠죠.
 
-핵심은 데이타를 추출할 때, 로직이나 패턴이 소스에 잘 정리가 안되어 있는 경우가 많다는 거죠  
-그 부분을 따로 설정 파일로 분리하는게 핵심입니다.  
-경험 많은 개발자분들은 아마 mybatis를 생각하실 수도 있겠네요.  
+보통은 위에서 기술한 일련의 흐름이 프로그램에 녹아있을겁니다. 그리고 어느 날, 오류가 발생하면 url이 바뀌었는지 html이 바뀌었는지 체크해 나갈겁니다.
+
+**소스를 확인하면서요.**
+
+그리고 오류가 나는 부분을 찾아서 수정하면 됩니다.  
+toobuk을 사용하면 소스를 직접 확인하지 않아도 대처하기가 쉬워집니다.   
+toobuk은 위 흐름 중 1~4번을 자동화 해주죠.  
+하지만 자동으로 해주기 위해서는 관리되어야 할 설정값이 있습니다. 예를 들면, url 같은.   
+결국 toobuk은 url, 정보를 찾으려는 html 노드 정보(css selector), output형식 등을 설정 파일로 따로 저장합니다. 그리고 프로그램에서 그 설정파일을 읽어들여서 크롤링을 해 오는 거죠.
+[Get 방식으로 크롤링하기](#Get-방식으로-크롤링하기)을 보시면 바로 그 사용법을 아실 수 있을 겁니다.   
+사실 python 소스는, 문서를 읽어 나가면 알겠지만 그리 길지 않습니다. 나머지는 그 설정값을 채워나가는 것이죠.
+그리고 toobuk에서는 플러그인 형태로 받아들이는 부분이 있어서, 필요한 경우 사용하시면 됩니다.   
+플러그인도 사실, 간단한 함수를 만드는 경우가 전부 입니다.
+
 
 데이타 추출은 beautifulsoup를 사용했습니다. 아래를 참조하세요.  
 https://www.crummy.com/software/BeautifulSoup/bs4/doc.ko/#
@@ -61,11 +83,26 @@ toobuk은 기본적으로 beautifulsoup4, requests 를 이용합니다.
 pip install beautifulsoup4  
 pip install requests
 
-toobuk을 설치합니다.
+만일, html이 아닌 xml을 가져오야 한다면 lxml을 설치하셔야 합니다.
+pip install lxml
+
+동적 웹크롤링이 필요한 경우가 많을 것입니다.
+pip install selenium
+하지만 이 부분은 따로 CustomConnector를 작성해야 합니다.
+[Selenium을 Connector로 추가하기](#Selenium을-Connector로-추가하기)를 참조하세요.  
+
+그리고 toobuk을 설치합니다.
 pip install toobuk
 
 설치 여부 확인  
-pip list  
+pip list
+
+## 참조
+Toobuk 소스는 아래에서 확인할 수 있습니다. 소스만 보면 좀 어려운 경우도 있죠 [클래스 다이어그램](#클래스-다이어그램)을 같이 보면서 확인해 보시죠.  
+https://github.com/ramoi/toobuk
+
+어떤 기능이 있는지, 샘플을 보면서 실행하고 싶다면 아래에서 확인하실 수 있습니다. 
+https://github.com/ramoi/toobuk_test
 
 ## Get 방식으로 크롤링하기
 01_get 패키지를 확인하세요.
@@ -96,6 +133,12 @@ pip list
 
     htb = Toobuk('getTest') #설정 파일 getTest.json, .json은 생략
     print( htb.grumble('housetrade') ) 
+
+
+3. 결과는 아래와 같습니다.
+
+
+    {'date': [{'DATE': '\xa0'}, {'DATE': '202304월'}, {'DATE': '202305월'}, {'DATE': '202306월'}, {'DATE': '202307월'}, {'DATE': '202308월'}, {'DATE': '202309월'}, {'DATE': '202310월'}, {'DATE': '202311월'}, {'DATE': '202312월'}, {'DATE': '202401월'}, {'DATE': '202402월'}, {'DATE': '202403월'}]}
 
 단지, 크롤링할 사이트와 어떤 데이타를 읽어들일지 selector를 통해서 설정만 해주었습니다.  
 아래 post 방식과 비교해보세요.
@@ -165,7 +208,7 @@ pip list
 
    위처럼, 파라메터가 2가지로 설정이 되어 있다면 실제로 크롤링을 하기 위해서 2번 사이트에 접속을 하게 됩니다.  
    파라메터가 n개라면 n번 되겠죠.
-   parameter.py를 실행해보시면 차이를 느끼실 수 있을겁니다.
+   03_parameter/parameter.py를 실행해보시면 차이를 느끼실 수 있을겁니다.
 
 1. 소스에서 파라메터 정의
    소스에서 파라메터를 넘기고 싶은 경우도 있습니다. 웹에서 select 를 통해 값을 넘겨 받거나, 
@@ -180,7 +223,8 @@ pip list
 
    위를 표현할때 get방식과 post 방식에서 약간 차이가 있습니다. get 방식에서는 url에서 해당값을 알려줘야 해요.
    ### get
-   아래 url 부분을 유심히 보시죠.
+   아래 url 부분을 유심히 보시죠.  
+   Toobuk에서는 사이트를 접속할때, url에서 변수처리된 #searchKeyword#, #searchCondition#이 parameter key로 선언된 값이 치환되는거죠.
 
         "get" : {
           "url" : "https://kosis.kr/civilComplaint/qnaList.do?searchKeyword=#searchKeyword#&searchCondition=#searchCondition#",
@@ -227,7 +271,7 @@ pip list
                       'searchKeyword': '지방'},
 
 ## Output 설정하기
-   크롤링 한 데이타(html 소스)에서 의미있는 데이타를 추출행 합니다. 어떤 상세 정보일 경우 **단일건**으로 읽어들여야 하고, 리스트 형식인 경우 **배열**로 읽어들여야 합니다.
+   크롤링 한 데이타(html 소스)에서 의미있는 데이타를 추출 합니다. 어떤 상세 정보일 경우 **단일건**으로 읽어들여야 하고, 리스트 형식인 경우 **배열**로 읽어들여야 합니다.
    ([List/Single 데이타 추출](#List/Single-데이타-추출) 참조)
    그리고  읽어온 데이타에서 가공을 해야 하는 경우도 있겠죠. (  [읽어온 데이타 skip 하기](#읽어온-데이타-skip-하기) / [변환하기](#변환하기) 참조)  
 
@@ -383,7 +427,7 @@ pip list
 위 내용을 보며 눈치채셨지요. 사실, 소스 수정은 최소한이며 대부분은 설정 파일을 통해 제어됩니다.   
 이번 단락에서는 읽어온 데이타 중 일부는 skip 하는 기능에 대하여 알아보겠습니다.  
 skip은 [List로-추출하기](#List로-추출하기)에서만 가능합니다. 사실 Single 에서는 단일 row이기에 skip이 의미가 없습니다.  
-06_skip를 보시기 바랍니다.
+06_skip 소스를 보시기 바랍니다.
 
 일단, 아래 주소를 확인해보시죠.
 https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&idx_cd=1240&freq=Y&period=N
@@ -397,7 +441,18 @@ https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&id
 						"name": "DATE"
 					}
 				]
-   저렇게 하니, 맨 앞에 공백이 있는 th까지 가져오네요. 이를 보완하기 위한 여러가지 방법이 있겠지만, 저는 미리 skip 기능을 사용하겠습니다.
+   저렇게 하니, 맨 앞에 공백이 있는 th까지 가져오네요. 이를 보완하기 위한 여러가지 방법이 있겠지만, 저는 미리 정의된 skip 기능을 사용하겠습니다.
+
+   #### white 공백문자 skip
+   하지만 white 공백문자는 미리 정의된 skip 함수가 있습니다.
+
+				"pattern": [
+					{
+						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
+						"name": "DATE",
+						"skip": "white"
+					}
+				]
 
    #### slice
    slice는 가져올 부분을 잘라냅니다. start는 시작을 end는 끝을. start만 적으면 start부터 끝까지, end만 적는다면 시작부터 end까지입니다.
@@ -440,18 +495,8 @@ https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&id
 					}
 				]
 
-#### white 공백문자 skip 
-   하지만 white 공백문자는 미리 정의된 skip 함수가 있습니다.
 
-				"pattern": [
-					{
-						"selector": "#t_Table_124001 thead > tr:nth-of-type(1) > th",
-						"name": "DATE",
-						"skip": "white"
-					}
-				]
-
-### skip 함수 추가
+   ### skip 함수 추가
    미리 정의된 skip 함수는 여러가지로 부족할 수 있습니다. 그리고 그걸 다 만들어놓을 수도 없죠. 
    사용자 skip 함수를 만들 수도 있습니다. 그리고 그걸 재사용이 많다면 미리 등록해 놓고 쓸 수 있죠.
 
@@ -476,7 +521,7 @@ https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&id
       def skipJan(text, r) :
          return text[4:6] == "01";
 
-### skip 사용자 정의 함수 사용
+   ### skip 사용자 정의 함수 사용
    재사용까지는 필요없는 경우 아래처럼 사용하셔도 됩니다. 물론, 미리 등록해놓고 쓰는게 더 낫긴하죠.
 
 				"pattern": [
@@ -497,7 +542,7 @@ https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&id
    06_skip를 확인해주세요.
 
 
-### 여러 skip을 같이 사용하기
+   ### 여러 skip을 같이 사용하기
    여러 skipper를 같이 사용할 수 있습니다.
 
 				"pattern": [
@@ -513,13 +558,14 @@ https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&id
 ## 변환하기
 이번 단락에서는 읽어온 데이타를 변환하는 기능에 대해서 알아보겠습니다.  
 사실, 사용법은 [읽어온 데이타 skip 하기](#읽어온-데이타-skip-하기)와 대동소이합니다.  
+다만, 차이점은 converter는 single 방식에서도 사용가능하며, [속성값 가져오기](#속성값-가져오기) 인 경우, 속성값을 선언하는 json에서도 사용가능하다는거죠.  
 07_converter 를 보시기 바랍니다.
 
 일단, 아래 주소를 확인해보시죠.
 https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&idx_cd=1240&freq=Y&period=N
 
-### 미리 정의된 변환기
-저는 지금 해당 html에서 날짜를 가져오려 합니다. YYYYMM월 형식이군요. selecor를 아래처럼 하겠습니다.
+   ### 미리 정의된 변환기
+   저는 지금 해당 html에서 날짜를 가져오려 합니다. YYYYMM월 형식이군요. selecor를 아래처럼 하겠습니다.
 
       "pattern": [
 					{
@@ -872,4 +918,22 @@ bs.type이 xml로 설정되어 있습니다. 그리고 outout pattern에서 뽑�
                               }
                       }
       }
+
+## 클래스 다이어그램
+아래는 toobuk 클래스 다이어그램입니다. 
+
+![캡쳐화면](https://raw.githubusercontent.com/ramoi/toobuk/refs/heads/master/cladgm.png)
+
+## 다음버젼에서는...
+Toobuk에서는 한 번 읽어들인 json 설정값을 계속 가지고 있습니다. 두번 세번 재사용할 때, 조금이라도 성능을 좋게 하기 위해서죠.
+그러면 문제가 설정 파일이 바뀌었을 때 인데요..  
+원래는 설정파일이 수정되면 다시 자동으로 읽어들이려고 계획했는데(마치 jsp 가 수정되면 수정된 시간을 체크하여 다시 컴파일 하는 것처럼), 만들다 보니 그 부분이 빠졌네요.  
+어려운 부분은 아니지만, 다음 버젼에서 하려 합니다. (계속 이어 간다면 말이죠..)  
+대신, 설정 파일이 바뀐 경우 어떻게 하느냐가 문제인데, 그래서 Toobul에서 클래스 메소드를 하나 만들어놨습니다. 
+
+      Toobuk.init()
+
+해당 메소드를 호출하면 설정된 값을 다 날려버립니다. 걱정하지 마세요. 초기화 되는거니.
+
+
 
