@@ -15,8 +15,8 @@ toobuk_test는 Toobuk를 사용하면서 사용할 수 있는 다양한 예제�
    1. [List로 추출하기](#List로-추출하기)
    1. [Single로 추출하기](#Single로-추출하기)
 1. [Output 추출 패턴 적용하기](#Output-추출-패턴-적용하기)
-   1. [text값 가져오기](#text값 가져오기)
-   1. [속성값 가져오기](#속성값 가져오기)
+   1. [text값 가져오기](#text값-가져오기)
+   1. [속성값 가져오기](#속성값-가져오기)
 1. [읽어온 데이타 skip 하기](#읽어온-데이타-skip-하기)
    1. [미리 정의된 skip](#미리-정의된-skip)
       1. [slice](#slice)
@@ -37,11 +37,11 @@ toobuk_test는 Toobuk를 사용하면서 사용할 수 있는 다양한 예제�
 1. [크롤링 여러번 하기:페이징처리 크롤링](#크롤링-여러번-하기:페이징처리 크롤링)
    1. [파라메터 설정 후, 페이징처리하기](#파라메터-설정-후,-페이징처리하기)
 1. [Connector](#Connector)
-   1. [Connector 생명주기](#Connector 생명주기)
-   1. [미리 정의된 Connector](#미리 정의된 Connector)
-   1. [사용자 정의 Connector](#사용자 정의 Connector)
+   1. [Connector 생명주기](#Connector-생명주기)
+   1. [미리 정의된 Connector](#미리-정의된-Connector)
+   1. [사용자 정의 Connector](#사용자-정의-Connector)
    1. [Connector 추가](#Connector-추가)
-   1. [Selenium을 Connector로 추가하기](#Selenium을 Connector로 추가하기)
+   1. [Selenium을 Connector로 추가하기](#Selenium을-Connector로-추가하기)
 1. [xml 다루기](#xml-다루기)
 
 ## 개요
@@ -788,6 +788,14 @@ output을 설정해서 뽑아낼 데이타를 지정할 수 있습니다.
             "bs.type" : "html.parser",
             "conn.type" : "connectorTest.CustomGetConnector",
 
+
+   ### Connector 추가
+   사용자가 정의한 Connector 역시 미리 등록한 후, 재사용할 수 있습니다.  
+   위에서 선언한 CustomGetConnector를 아래와 같이 미리 등록합니다.
+
+      ConnetManager.addConnector("customGet", CustomGetConnector)
+
+
    ### Selenium을 Connector로 추가하기
    10_selenium을 봐주세요.  
    우리가 selenium을 사용하기 위해선 Connector를 상속받아서 구현해야 합니다.  
@@ -831,6 +839,7 @@ output을 설정해서 뽑아낼 데이타를 지정할 수 있습니다.
               # 잊지말고 동작이 끝나면 driver을 종료할것!
               driver.quit()
               return bs
+
 
 
 ## xml 다루기
