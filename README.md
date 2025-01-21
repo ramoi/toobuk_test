@@ -123,8 +123,7 @@ https://github.com/ramoi/toobuk_test
    파일명은 getTest.json입니다.
 
 
-    {
-    "housetrade" : {
+       { "housetrade" : {
                 "url" : "https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&idx_cd=1240&freq=Y&period=N",
                 "output" : {
                             "date" : {    "type" : "list",
@@ -137,20 +136,20 @@ https://github.com/ramoi/toobuk_test
                                          }
                             }
                     }
-    }
+       }
 2.  아래 설정 파일을 읽어들여 크롤링을 합니다.  
 
 
-    from toobuk import Toobuk
+       from toobuk import Toobuk
 
-    htb = Toobuk('getTest') #설정 파일 getTest.json, .json은 생략
-    print( htb.grumble('housetrade') ) 
+       htb = Toobuk('getTest') #설정 파일 getTest.json, .json은 생략
+       print( htb.grumble('housetrade') ) 
 
 
 3. 결과는 아래와 같습니다.
 
 
-    {'date': [{'DATE': '\xa0'}, {'DATE': '202304월'}, {'DATE': '202305월'}, {'DATE': '202306월'}, {'DATE': '202307월'}, {'DATE': '202308월'}, {'DATE': '202309월'}, {'DATE': '202310월'}, {'DATE': '202311월'}, {'DATE': '202312월'}, {'DATE': '202401월'}, {'DATE': '202402월'}, {'DATE': '202403월'}]}
+       {'date': [{'DATE': '\xa0'}, {'DATE': '202304월'}, {'DATE': '202305월'}, {'DATE': '202306월'}, {'DATE': '202307월'}, {'DATE': '202308월'}, {'DATE': '202309월'}, {'DATE': '202310월'}, {'DATE': '202311월'}, {'DATE': '202312월'}, {'DATE': '202401월'}, {'DATE': '202402월'}, {'DATE': '202403월'}]}
 
 단지, 크롤링할 사이트와 어떤 데이타를 읽어들일지 selector를 통해서 설정만 해주었습니다.  
 아래 post 방식과 비교해보세요.
@@ -163,32 +162,32 @@ https://github.com/ramoi/toobuk_test
    파일명은 post.json입니다.
 
 
-    {
-     "qa" : {
-            "url" : "https://kosis.kr/civilComplaint/qnaList.do",
-            "conn.type" : "post",
-            "bs.type" : "html.parser",
-            "output" : {
-                        "date" : {    "type" : "list",
-                                   "pattern" : [
-                                                {
-                                                    "selector" : ".bd_lst_tit a",
-                                                    "name" : "TITLE"
-                                                }
-                                               ]
-                                     }
-                        }
-                }
-      }
+       {
+        "qa" : {
+               "url" : "https://kosis.kr/civilComplaint/qnaList.do",
+               "conn.type" : "post",
+               "bs.type" : "html.parser",
+               "output" : {
+                           "date" : {    "type" : "list",
+                                      "pattern" : [
+                                                   {
+                                                       "selector" : ".bd_lst_tit a",
+                                                       "name" : "TITLE"
+                                                   }
+                                                  ]
+                                        }
+                           }
+                   }
+         }
 
 2.  아래 설정 파일을 읽어들여 크롤링을 합니다.
 
 
-    from toobuk import Toobuk
-    import util as ut
+       from toobuk import Toobuk
+       import util as ut
 
-    htb = Toobuk('post') #설정 파일 post.json, .json은 생략
-    ut.pprint( htb.grumble('qa') )
+       htb = Toobuk('post') #설정 파일 post.json, .json은 생략
+       ut.pprint( htb.grumble('qa') )
 
 위에 get 방식과  차이를 느끼시나요? 소스에서는 차이가 없습니다. 
 단지 설정 파일에서 **conn.type**이 post로 되어 있습니다.
@@ -227,11 +226,11 @@ https://github.com/ramoi/toobuk_test
    크롤링을 해온 값을 읽어서 다시 다른 페이지를 크롤링하면서 파라메터를 넘길 수 있죠. 그럴 때는 소스에서 파라메터를 넘기면 됩니다.
 
    
-      parameter = {
-          "searchKeyword": "주택",
-          "searchCondition": "subject"
-      }
-      ut.pprint( htb.grumble('empty.param', parameter) )
+         parameter = {
+             "searchKeyword": "주택",
+             "searchCondition": "subject"
+         }
+         ut.pprint( htb.grumble('empty.param', parameter) )
 
    위를 표현할때 get방식과 post 방식에서 약간 차이가 있습니다. get 방식에서는 url에서 해당값을 알려줘야 해요.
    ## get
@@ -274,9 +273,10 @@ https://github.com/ramoi/toobuk_test
    parameter 설정한 경우, 아래처럼 parameter에서 설정한 key, value가 output에 그대로 실려 있습니다.  
    반면, parameter가 없는 경우 'data' 값만 있습니다.
 
-      {   'search': [   {   'data': [   {   'CNT': '111',
-                                      'TITLE': '행정안전부 지방자치단체 외국인주민 현황 관련 문의'},
-                                  {'CNT': '104', 'TITLE': '2016년 시군구별 지방교부세'},
+         {   'search': [   {   'data': [   
+                                    {   'CNT': '111',
+                                       'TITLE': '행정안전부 지방자치단체 외국인주민 현황 관련 문의'},
+                                    {'CNT': '104', 'TITLE': '2016년 시군구별 지방교부세'},
                                   ...
                                    ],
                       'searchCondition': 'subject',
@@ -394,12 +394,12 @@ https://github.com/ramoi/toobuk_test
       }
 # Output 추출 패턴 적용하기
    ## text값 가져오기
-   아래처럼 선언된 태그 안에서 사용된 text 문자열입니다. 아래를 보시면 text 가 text 값이되며 01_get 소스를 보시면 
+   아래처럼 선언된 태그 안에서 사용된 text 문자열입니다. 
      
       <p>text</p>
 
-   01_get 소스르 보시면, 아래와 같이 selector오 name이 있습니다. 이와 같이 되면 text값을 가져올 수 있습니다. 
-   그리고 아래  [속성값 가져오기](#속성값-가져오기) 사용할 수 있는 방법이 있숩니다.
+   01_get 소스르 보시면, 아래와 같이 selector와 name이 선언되어 있습니다.  
+   그러면 html 소스에서 해당 부분을 찾아내어 name으로 저장한 뒤 결과값을 리턴해줍니다.
 
                   "output" : {
                         "date" : {    "type" : "list",
@@ -443,6 +443,13 @@ skip은 [List로-추출하기](#List로-추출하기)에서만 가능합니다. 
 
 일단, 아래 주소를 확인해보시죠.
 https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&idx_cd=1240&freq=Y&period=N
+
+만일, 이 글을 쓰는 시점에서 html이 바뀌지 않았다면 아래 테이블을 확인할 수 있을 겁니다.  
+제일 앞에 th 칸이 비어 있다는 것도요.
+
+![캡쳐화면](https://raw.githubusercontent.com/ramoi/toobuk_test/refs/heads/master/image1.png)
+
+
 
    ## 미리 정의된 skip
    저는 지금 해당 html에서 날짜를 가져오려 합니다. YYYYMM월 형식이군요. selecor를 아래처럼 하겠습니다.
@@ -576,7 +583,6 @@ https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&id
 일단, 아래 주소를 확인해보시죠.
 https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&idx_cd=1240&freq=Y&period=N
 
-   ## 미리 정의된 변환기
    저는 지금 해당 html에서 날짜를 가져오려 합니다. YYYYMM월 형식이군요. selecor를 아래처럼 하겠습니다.
 
       "pattern": [
@@ -602,6 +608,9 @@ https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&id
 결과는 아래와 같습니다.
 
       [   {   'DATE': '2023-12',...
+
+## 미리 정의된 변환기
+   미리 정의된 converter 입니다. 그냥 사용하면 되죠.
 
    ### currency
    세자리 숫자마다 ,(콤마)를 찍어줍니다.
@@ -768,7 +777,7 @@ output을 설정해서 뽑아낼 데이타를 지정할 수 있습니다.
    혹시, put이나 delete 도 가능한지 물어보신다면, [사용자 정의 Connector](#사용자-정의-Connector)로 직접 구현할 수 있습니다.
    그리고 Selenium 역시 Connector로 구현할 수 있습니다.
 
-   아래 코드를 봐주세요.
+   아래 코드를 봐주세요.  
    https://github.com/ramoi/toobuk/blob/master/toobuk/connector_v1.py
 
    AbstractConnector 가 Connector 에서 사용하는 추상클래스입니다.  
