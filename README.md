@@ -187,7 +187,7 @@ https://github.com/ramoi/toobuk_test
           htb = Toobuk('post') #설정 파일 post.json, .json은 생략
           ut.pprint( htb.grumble('qa') )
 
-위에 get 방식과  차이를 느끼시나요? 소스에서는 차이가 없습니다. 
+위에 get 방식과  차이를 느끼시나요? 소스에서는 차이가 없습니다.   
 단지 설정 파일에서 **conn.type**이 post로 되어 있습니다.
 
 # Parameter 설정하기
@@ -281,13 +281,13 @@ https://github.com/ramoi/toobuk_test
                       'searchKeyword': '지방'},
 
 # Output 설정하기
-   크롤링 한 데이타(html 소스)에서 의미있는 데이타를 추출 합니다. 어떤 상세 정보일 경우 **단일건**으로 읽어들여야 하고, 리스트 형식인 경우 **배열**로 읽어들여야 합니다.
-   ([List/Single 데이타 추출](#List/Single-데이타-추출) 참조)
+   html 소스에서 의미있는 데이타를 추출 합니다. 어떤 상세 정보일 경우 **단일건**으로 읽어들여야 하고, 리스트 형식인 경우 **배열**로 읽어들여야 합니다.
+   ([List/Single 데이타 추출](#List/Single-데이타-추출) 참조)  
    그리고  읽어온 데이타에서 가공을 해야 하는 경우도 있겠죠. (  [읽어온 데이타 skip 하기](#읽어온-데이타-skip-하기) / [변환하기](#변환하기) 참조)  
 
    ## Output 설정하기
    04_output을 보세요.  
-   보시는 것처럼 output key값으로 output을 정의해 나가면 됩니다. 
+   보시는 것처럼 output key값으로 output을 정의해 나가면 됩니다.  
    소스에서는 date와 changeRate 2개가 output으로 설정이되어 있습니다. 
 
     {
