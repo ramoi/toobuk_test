@@ -123,7 +123,6 @@ https://github.com/ramoi/toobuk_test
 1. 설정 파일을 만듭니다.
    파일명은 getTest.json입니다.
 
-
        { "housetrade" : {
                 "url" : "https://www.index.go.kr/unity/potal/eNara/sub/showStblGams3.do?stts_cd=124001&idx_cd=1240&freq=Y&period=N",
                 "output" : {
@@ -140,11 +139,10 @@ https://github.com/ramoi/toobuk_test
        }
 2.  아래 설정 파일을 읽어들여 크롤링을 합니다.  
 
+          from toobuk import Toobuk
 
-       from toobuk import Toobuk
-
-       htb = Toobuk('getTest') #설정 파일 getTest.json, .json은 생략
-       print( htb.grumble('housetrade') ) 
+          htb = Toobuk('getTest') #설정 파일 getTest.json, .json은 생략
+          print( htb.grumble('housetrade') ) 
 
 
 3. 결과는 아래와 같습니다.
@@ -183,12 +181,11 @@ https://github.com/ramoi/toobuk_test
 
 2.  아래 설정 파일을 읽어들여 크롤링을 합니다.
 
+          from toobuk import Toobuk
+          import util as ut
 
-       from toobuk import Toobuk
-       import util as ut
-
-       htb = Toobuk('post') #설정 파일 post.json, .json은 생략
-       ut.pprint( htb.grumble('qa') )
+          htb = Toobuk('post') #설정 파일 post.json, .json은 생략
+          ut.pprint( htb.grumble('qa') )
 
 위에 get 방식과  차이를 느끼시나요? 소스에서는 차이가 없습니다. 
 단지 설정 파일에서 **conn.type**이 post로 되어 있습니다.
